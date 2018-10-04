@@ -4,9 +4,9 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 
-// This is Auction contract for RootsProject.co
+// This is DealRoom contract for RootsProject.co
 
-contract RootsAuction is Ownable {
+contract RootsDealRoom is Ownable {
     using SafeMath for uint256;
 
     // address who receive all tokens from this smart contract after close time
@@ -15,13 +15,13 @@ contract RootsAuction is Ownable {
     // address of token smart contract
     address public tokenAddress;
 
-    // timestamp until auction is active
-    uint256 public auctionEndTime;
+    // timestamp until deal is active
+    uint256 public dealEndTime;
 
     // balance in ETH
     uint256 public balance;
 
-    // Current state of the auction.
+    // Current state of the deal.
     address public highestBidder;
     uint256 public highestBid;
 
@@ -32,15 +32,32 @@ contract RootsAuction is Ownable {
     // By defaul initialized to `false`.
     bool ended = false;
 
+    // ---====== Pending returns ======---
+    /**
+     * @dev Get returns tokens by bidder address
+     */
+    mapping(address => uint256) public pendingReturns;
+
+    /**
+     * @dev Contracts addresses list
+     */
+    address[] public pendingReturnsAddr;
+
+    /**
+     * @dev Count of contracts in list
+     */
+    function numPendingReturns() public view returns (uint256)
+    { return boxesAddr.length; }
+
     // Events that will be emitted on changes.
     event BidIncreased(address bidder, uint256 amount);
-    event AuctionEnded(address winner, uint256 amount);
+    event DealEnded(address winner, uint256 amount);
 
     /**
     * @dev Reverts if a safe box is still locked.
     */
     modifier onlyAfterEndTime {
-        require(now >= auctionEndTime);
+        require(now >= dealEndTime);
         _;
     }
 
@@ -51,16 +68,16 @@ contract RootsAuction is Ownable {
     * @param _safeTime The amount of time in unix timestamp until safe box is closed.
     * @param _owner Owner account address.
     */
-    constructor(address _beneficiary, address _tokenAddress, uint256 _auctionEndTime) public payable {
+    constructor(address _beneficiary, address _tokenAddress, uint256 _dealEndTime) public payable {
         require(_beneficiary != 0x0);
         require(_tokenAddress != 0x0);
-        require(_auctionEndTime > now);
+        require(_dealEndTime > now);
 
         require(msg.value > 0);
 
         beneficiary = _beneficiary;
         tokenAddress = _tokenAddress;
-        auctionEndTime = _auctionEndTime;
+        dealEndTime = _dealEndTime;
 
         balance = msg.value;
     }
@@ -73,8 +90,8 @@ contract RootsAuction is Ownable {
     * @param _data  Transaction metadata.
     */
     function tokenFallback(address _from, uint _value, bytes _data) external returns (bool) {
-        require(msg.sender == tokenAddress, "There is not a token for auction.");
-        require(now <= auctionEndTime, "Auction already ended.");
+        require(msg.sender == tokenAddress, "There is not a token for deal.");
+        require(now <= dealEndTime, "Deal already ended.");
         require(_value > highestBid, "There already is a higher bid.");
 
         if (highestBid != 0) {
@@ -89,15 +106,48 @@ contract RootsAuction is Ownable {
     }
 
     /**
-    * End the auction and send the highest bid to the beneficiary and ETH to highestBidder
+    * Withdraw a bid that was overbid (call by owner of tokens).
     */
-    function auctionEnd() public {
-        require(now >= auctionEndTime, "Auction not yet ended.");
-        require(!ended, "auctionEnd has already been called.");
+    function withdraw() public returns (bool) {
+        return baseWithdrawToken(msg.sender);
+    }
+
+    /**
+    * Withdraw a bid that was overbid (call by anybody).
+    */
+    function withdraw(address _bidder) public returns (bool) {
+        require(now >= dealEndTime, "Deal not yet ended.");
+
+        return baseWithdrawToken(_bidder);
+    }
+
+    /**
+    * Base function for withdraw tokens.
+    */
+    function baseWithdrawToken(address _bidder) internal returns (bool) {
+        uint amount = pendingReturns[_bidder];
+        if (amount > 0) {
+            pendingReturns[_bidder] = 0;
+
+            if (!ERC20(tokenAddress).transfer(_bidder, amount)) {
+                // No need to call throw here, just reset the amount owing
+                pendingReturns[_bidder] = amount;
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+    * End the deal and send the highest bid to the beneficiary and ETH to highestBidder
+    */
+    function dealEnd() public {
+        require(now >= dealEndTime, "Deal not yet ended.");
+        require(!ended, "dealEnd has already been called.");
 
         // 2. Effects
         ended = true;
-        emit AuctionEnded(highestBidder, highestBid);
+        emit DealEnded(highestBidder, highestBid);
 
         //transfer ETH to highestBidder
         highestBidder.transfer(balance);
