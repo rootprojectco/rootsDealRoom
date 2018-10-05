@@ -183,12 +183,6 @@ contract RootsDealRoom is Ownable {
      */
     mapping(address => uint256) public pendingReturns;
 
-    /**
-     * @dev Count of contracts in list
-     */
-    function numPendingReturns() public view returns (uint256)
-    { return pendingReturnsAddr.length; }
-
     // Events that will be emitted on changes.
     event BidIncreased(address bidder, uint256 amount);
     event DealEnded(address winner, uint256 amount);
@@ -228,20 +222,20 @@ contract RootsDealRoom is Ownable {
     * @param _value Amount of tokens.
     * @param _data  Transaction metadata.
     */
-    function tokenFallback(address _from, uint _value, bytes _data) external returns (bool) {
+    function tokenFallback(address _from, uint256 _value, bytes _data) external returns (bool) {
         require(msg.sender == tokenAddress, "There is not a token for deal.");
         require(now <= dealEndTime, "Deal already ended.");
         require(pendingReturns[_from].add(_value) > highestBid, "There already is a higher bid.");
 
+        uint256 aggregatedValue = pendingReturns[_from].add(_value);
+
         if (highestBid != 0) {
             pendingReturns[highestBidder] = pendingReturns[highestBidder].add(highestBid);
-
-            _value = pendingReturns[_from].add(_value);
             pendingReturns[_from] = 0;
         }
 
         highestBidder = _from;
-        highestBid = _value;
+        highestBid = aggregatedValue;
         emit BidIncreased(_from, _value);
 
         return true;
@@ -294,5 +288,64 @@ contract RootsDealRoom is Ownable {
 
         //transfer highestBid tokens to beneficiary
         ERC20(tokenAddress).transfer(beneficiary, highestBid);
+    }
+}
+
+// File: contracts/RootsDealRoomFactory.sol
+
+contract RootsDealRoomFactory is Ownable {
+
+    using SafeMath for uint256;
+
+    struct Deal {
+        address addr;
+        address owner;
+        address beneficiary;
+        uint256 dealEndTime;
+        uint256 index;
+    }
+
+    // address of Roots token
+    address public tokenAddress;
+
+    // ---====== DEALS ======---
+    /**
+     * @dev Get deal object by address
+     */
+    mapping(address => Deal) public deals;
+
+    /**
+     * @dev Contracts addresses list
+     */
+    address[] public dealsAddr;
+
+    /**
+     * @dev Count of contracts in list
+     */
+    function numDeals() public view returns (uint256)
+    { return dealsAddr.length; }
+
+    // ---====== CONSTRUCTOR ======---
+
+    constructor(address _rootsToken) public {
+        require(_rootsToken != 0x0);
+        tokenAddress = _rootsToken;
+    }
+
+    function changeTokenAddress(address _rootsToken) onlyOwner public {
+        require(_rootsToken != 0x0);
+        tokenAddress = _rootsToken;
+    }
+
+    function create(address _beneficiary, uint256 _dealEndTime) public returns (RootsDealRoom) {
+        RootsDealRoom newContract = new RootsDealRoom(_beneficiary, tokenAddress, _dealEndTime);
+
+        deals[newContract].addr = newContract;
+        deals[newContract].owner = msg.sender;
+        deals[newContract].beneficiary = _beneficiary;
+        deals[newContract].dealEndTime = _dealEndTime;
+        deals[newContract].index = dealsAddr.push(newContract) - 1;
+
+        return newContract;
     }
 }
