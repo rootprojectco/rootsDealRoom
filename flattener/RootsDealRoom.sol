@@ -237,10 +237,13 @@ contract RootsDealRoom is Ownable {
     function tokenFallback(address _from, uint _value, bytes _data) external returns (bool) {
         require(msg.sender == tokenAddress, "There is not a token for deal.");
         require(now <= dealEndTime, "Deal already ended.");
-        require(_value > highestBid, "There already is a higher bid.");
+        require(pendingReturns[_from].add(_value) > highestBid, "There already is a higher bid.");
 
         if (highestBid != 0) {
             pendingReturns[highestBidder] = pendingReturns[highestBidder].add(highestBid);
+
+            _value = pendingReturns[_from].add(_value);
+            pendingReturns[_from] = 0;
         }
 
         highestBidder = _from;
