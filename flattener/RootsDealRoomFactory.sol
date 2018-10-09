@@ -337,8 +337,8 @@ contract RootsDealRoomFactory is Ownable {
         tokenAddress = _rootsToken;
     }
 
-    function create(address _beneficiary, uint256 _dealEndTime) public returns (RootsDealRoom) {
-        RootsDealRoom newContract = new RootsDealRoom(_beneficiary, tokenAddress, _dealEndTime);
+    function create(address _beneficiary, uint256 _dealEndTime) public payable returns (RootsDealRoom) {
+        RootsDealRoom newContract = (new RootsDealRoom).value(msg.value)(_beneficiary, tokenAddress, _dealEndTime);
 
         deals[newContract].addr = newContract;
         deals[newContract].owner = msg.sender;
