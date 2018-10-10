@@ -27,7 +27,7 @@ contract RootsDealRoom is Ownable {
 
     // Set to true at the end, disallows any change.
     // By defaul initialized to `false`.
-    bool ended = false;
+    bool public ended = false;
 
     /**
      * @dev Get returns tokens by bidder address
@@ -37,6 +37,7 @@ contract RootsDealRoom is Ownable {
     // Events that will be emitted on changes.
     event BidIncreased(address bidder, uint256 amount);
     event DealEnded(address winner, uint256 amount);
+    event LoadEther(address loader, uint256 amount);
 
     /**
     * @dev Reverts if a safe box is still locked.
@@ -57,13 +58,13 @@ contract RootsDealRoom is Ownable {
         require(_tokenAddress != 0x0);
         require(_dealEndTime > now);
 
-        require(msg.value > 0);
-
         beneficiary = _beneficiary;
         tokenAddress = _tokenAddress;
         dealEndTime = _dealEndTime;
 
-        balance = msg.value;
+        if (msg.value > 0) {
+            loadEther();
+        }
     }
 
     /**
@@ -139,5 +140,23 @@ contract RootsDealRoom is Ownable {
 
         //transfer highestBid tokens to beneficiary
         ERC20(tokenAddress).transfer(beneficiary, highestBid);
+    }
+
+    /**
+   * @dev fallback function when contract receive ether
+   */
+    function () external payable {
+        loadEther();
+    }
+
+    /**
+    * Load ether to the current deal
+    */
+    function loadEther() public payable {
+        require(now <= dealEndTime, "Deal already ended.");
+        require(msg.value > 0, "Should send ether.");
+
+        balance = balance.add(msg.value);
+        emit LoadEther(msg.sender, msg.value);
     }
 }

@@ -176,22 +176,17 @@ contract RootsDealRoom is Ownable {
 
     // Set to true at the end, disallows any change.
     // By defaul initialized to `false`.
-    bool ended = false;
+    bool public ended = false;
 
     /**
      * @dev Get returns tokens by bidder address
      */
     mapping(address => uint256) public pendingReturns;
 
-    /**
-     * @dev Count of contracts in list
-     */
-    function numPendingReturns() public view returns (uint256)
-    { return pendingReturnsAddr.length; }
-
     // Events that will be emitted on changes.
     event BidIncreased(address bidder, uint256 amount);
     event DealEnded(address winner, uint256 amount);
+    event LoadEther(address loader, uint256 amount);
 
     /**
     * @dev Reverts if a safe box is still locked.
@@ -212,13 +207,13 @@ contract RootsDealRoom is Ownable {
         require(_tokenAddress != 0x0);
         require(_dealEndTime > now);
 
-        require(msg.value > 0);
-
         beneficiary = _beneficiary;
         tokenAddress = _tokenAddress;
         dealEndTime = _dealEndTime;
 
-        balance = msg.value;
+        if (msg.value > 0) {
+            loadEther();
+        }
     }
 
     /**
@@ -228,20 +223,20 @@ contract RootsDealRoom is Ownable {
     * @param _value Amount of tokens.
     * @param _data  Transaction metadata.
     */
-    function tokenFallback(address _from, uint _value, bytes _data) external returns (bool) {
+    function tokenFallback(address _from, uint256 _value, bytes _data) external returns (bool) {
         require(msg.sender == tokenAddress, "There is not a token for deal.");
         require(now <= dealEndTime, "Deal already ended.");
         require(pendingReturns[_from].add(_value) > highestBid, "There already is a higher bid.");
 
+        uint256 aggregatedValue = pendingReturns[_from].add(_value);
+
         if (highestBid != 0) {
             pendingReturns[highestBidder] = pendingReturns[highestBidder].add(highestBid);
-
-            _value = pendingReturns[_from].add(_value);
             pendingReturns[_from] = 0;
         }
 
         highestBidder = _from;
-        highestBid = _value;
+        highestBid = aggregatedValue;
         emit BidIncreased(_from, _value);
 
         return true;
@@ -294,5 +289,23 @@ contract RootsDealRoom is Ownable {
 
         //transfer highestBid tokens to beneficiary
         ERC20(tokenAddress).transfer(beneficiary, highestBid);
+    }
+
+    /**
+   * @dev fallback function when contract receive ether
+   */
+    function () external payable {
+        loadEther();
+    }
+
+    /**
+    * Load ether to the current deal
+    */
+    function loadEther() public payable {
+        require(now <= dealEndTime, "Deal already ended.");
+        require(msg.value > 0, "Should send ether.");
+
+        balance = balance.add(msg.value);
+        emit LoadEther(msg.sender, msg.value);
     }
 }
