@@ -2,8 +2,6 @@ const HDWalletProvider = require("truffle-hdwallet-provider-privkey");
 
 const configs = require('./configs/config');
 
-console.log("truffle.js", configs.privateKey);
-
 module.exports = {
     // See <http://truffleframework.com/docs/advanced/configuration>
     // to customize your Truffle configuration!
