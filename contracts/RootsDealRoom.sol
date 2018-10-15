@@ -114,14 +114,15 @@ contract RootsDealRoom is Ownable {
     */
     function baseWithdrawToken(address _bidder) internal returns (bool) {
         uint amount = pendingReturns[_bidder];
-        if (amount > 0) {
-            pendingReturns[_bidder] = 0;
+        require(amount > 0);
 
-            if (!ERC20(tokenAddress).transfer(_bidder, amount)) {
-                pendingReturns[_bidder] = amount;
-                return false;
-            }
+        pendingReturns[_bidder] = 0;
+
+        if (!ERC20(tokenAddress).transfer(_bidder, amount)) {
+            pendingReturns[_bidder] = amount;
+            return false;
         }
+
         return true;
     }
 
