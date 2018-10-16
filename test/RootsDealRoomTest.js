@@ -22,16 +22,16 @@ contract('RootsDealRoom test', async (accounts) => {
         await tokenInstance.mint(account1, 1000);
         await tokenInstance.mint(account2, 1000);
         await tokenInstance.mint(account3, 1000);
+    });
 
+    it("should create deal for " + DEAL_ROOM_OPEN_IN_SECONDS + " seconds", async () => {
         let deployParams = [
             beneficiary,
             tokenInstance.address,
             dateCloseDealRoom
         ];
         dealRoomInstance = await RootsDealRoom.new.apply(this, deployParams, {value: 1});
-    });
 
-    it("should check initial params", async () => {
         let _beneficiary = await dealRoomInstance.beneficiary();
         let _tokenAddress = await dealRoomInstance.tokenAddress();
         let _dealEndTime = await dealRoomInstance.dealEndTime();
@@ -193,22 +193,42 @@ contract('RootsDealRoom test', async (accounts) => {
         assert.equal(_pendingReturnsAccount3.valueOf(), 200);
     });
 
-    it("should not withdraw tokens from account1 and account2", async () => {
+    it("should make bid (250) from account2", async () => {
+        tokenInstance.transfer(dealRoomInstance.address, 250, {from: account2});
+
+        let _balanceAccount1 = await tokenInstance.balanceOf(account1);
+        assert.equal(_balanceAccount1.valueOf(), 780);
+
+        let _balanceAccount2 = await tokenInstance.balanceOf(account2);
+        assert.equal(_balanceAccount2.valueOf(), 750);
+
+        let _balanceDealRoom = await tokenInstance.balanceOf(dealRoomInstance.address);
+        assert.equal(_balanceDealRoom.valueOf(), 670);
+
+        let _highestBidder = await dealRoomInstance.highestBidder();
+        assert.equal(_highestBidder, account2);
+
+        let _highestBid = await dealRoomInstance.highestBid();
+        assert.equal(_highestBid.valueOf(), 250);
+
+        let _pendingReturnsAccount1 = await dealRoomInstance.pendingReturns(account1);
+        assert.equal(_pendingReturnsAccount1.valueOf(), 220);
+
+        let _pendingReturnsAccount2 = await dealRoomInstance.pendingReturns(account2);
+        assert.equal(_pendingReturnsAccount2.valueOf(), 0);
+
+        let _pendingReturnsAccount3 = await dealRoomInstance.pendingReturns(account3);
+        assert.equal(_pendingReturnsAccount3.valueOf(), 200);
+    });
+
+    it("should not withdraw tokens from account2", async () => {
         let error1;
         try {
-            await dealRoomInstance.withdraw({from: account1});
+            await dealRoomInstance.withdraw({from: account2});
         } catch (e) {
             error1 = e;
         }
         assert.isDefined(error1);
-
-        let error2;
-        try {
-            await dealRoomInstance.withdraw({from: account2});
-        } catch (e) {
-            error2 = e;
-        }
-        assert.isDefined(error2);
     });
 
     it("should withdraw tokens from account3", async () => {
@@ -218,7 +238,7 @@ contract('RootsDealRoom test', async (accounts) => {
         assert.equal(_balanceAccount3.valueOf(), 1000);
 
         let _balanceDealRoom = await tokenInstance.balanceOf(dealRoomInstance.address);
-        assert.equal(_balanceDealRoom.valueOf(), 220);
+        assert.equal(_balanceDealRoom.valueOf(), 470);
 
         let _pendingReturnsAccount3 = await dealRoomInstance.pendingReturns(account3);
         assert.equal(_pendingReturnsAccount3.valueOf(), 0);
@@ -232,5 +252,62 @@ contract('RootsDealRoom test', async (accounts) => {
             error1 = e;
         }
         assert.isDefined(error1);
+    });
+
+    it("should end deal after " + DEAL_ROOM_OPEN_IN_SECONDS + " seconds", async () => {
+        let etherBalanceAccount2Before = web3.eth.getBalance(account2);
+
+        await new Promise(resolve => setTimeout(resolve, DEAL_ROOM_OPEN_IN_SECONDS*1000));
+
+        await dealRoomInstance.dealEnd({from: account1});
+
+        let _balanceAccount1 = await tokenInstance.balanceOf(account1);
+        assert.equal(_balanceAccount1.valueOf(), 780);
+
+        let _balanceAccount2 = await tokenInstance.balanceOf(account2);
+        assert.equal(_balanceAccount2.valueOf(), 750);
+
+        let _balanceBeneficiary = await tokenInstance.balanceOf(beneficiary);
+        assert.equal(_balanceBeneficiary.valueOf(), 250);
+
+        let etherBalanceAccount2 = web3.eth.getBalance(account2);
+        assert.equal(etherBalanceAccount2.valueOf() - etherBalanceAccount2Before.valueOf(), web3.toWei('3', 'ether'));
+
+        let _balanceDealRoom = await tokenInstance.balanceOf(dealRoomInstance.address);
+        assert.equal(_balanceDealRoom.valueOf(), 220);
+
+        let _highestBidder = await dealRoomInstance.highestBidder();
+        assert.equal(_highestBidder, account2);
+
+        let _highestBid = await dealRoomInstance.highestBid();
+        assert.equal(_highestBid.valueOf(), 250);
+
+        let _pendingReturnsAccount1 = await dealRoomInstance.pendingReturns(account1);
+        assert.equal(_pendingReturnsAccount1.valueOf(), 220);
+
+        let _pendingReturnsAccount2 = await dealRoomInstance.pendingReturns(account2);
+        assert.equal(_pendingReturnsAccount2.valueOf(), 0);
+
+        let _pendingReturnsAccount3 = await dealRoomInstance.pendingReturns(account3);
+        assert.equal(_pendingReturnsAccount3.valueOf(), 0);
+    });
+
+    it("should withdraw tokens from account1", async () => {
+        await dealRoomInstance.withdraw({from: account1});
+
+        let _balanceAccount1 = await tokenInstance.balanceOf(account1);
+        assert.equal(_balanceAccount1.valueOf(), 1000);
+
+        let _balanceDealRoom = await tokenInstance.balanceOf(dealRoomInstance.address);
+        assert.equal(_balanceDealRoom.valueOf(), 0, "Wrong balance at deal room");
+
+        let _pendingReturnsAccount1 = await dealRoomInstance.pendingReturns(account1);
+        assert.equal(_pendingReturnsAccount1.valueOf(), 0);
+
+        let _pendingReturnsAccount2 = await dealRoomInstance.pendingReturns(account2);
+        assert.equal(_pendingReturnsAccount2.valueOf(), 0);
+
+        let _pendingReturnsAccount3 = await dealRoomInstance.pendingReturns(account3);
+        assert.equal(_pendingReturnsAccount3.valueOf(), 0);
     });
 });
