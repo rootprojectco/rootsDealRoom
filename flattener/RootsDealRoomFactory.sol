@@ -176,7 +176,7 @@ contract RootsDealRoom is Ownable {
 
     // Set to true at the end, disallows any change.
     // By defaul initialized to `false`.
-    bool ended = false;
+    bool public ended = false;
 
     /**
      * @dev Get returns tokens by bidder address
@@ -186,6 +186,7 @@ contract RootsDealRoom is Ownable {
     // Events that will be emitted on changes.
     event BidIncreased(address bidder, uint256 amount);
     event DealEnded(address winner, uint256 amount);
+    event LoadEther(address loader, uint256 amount);
 
     /**
     * @dev Reverts if a safe box is still locked.
@@ -206,13 +207,13 @@ contract RootsDealRoom is Ownable {
         require(_tokenAddress != 0x0);
         require(_dealEndTime > now);
 
-        require(msg.value > 0);
-
         beneficiary = _beneficiary;
         tokenAddress = _tokenAddress;
         dealEndTime = _dealEndTime;
 
-        balance = msg.value;
+        if (msg.value > 0) {
+            loadEther();
+        }
     }
 
     /**
@@ -225,9 +226,14 @@ contract RootsDealRoom is Ownable {
     function tokenFallback(address _from, uint256 _value, bytes _data) external returns (bool) {
         require(msg.sender == tokenAddress, "There is not a token for deal.");
         require(now <= dealEndTime, "Deal already ended.");
-        require(pendingReturns[_from].add(_value) > highestBid, "There already is a higher bid.");
 
         uint256 aggregatedValue = pendingReturns[_from].add(_value);
+
+        if (highestBidder == _from) {
+            aggregatedValue = highestBid.add(_value);
+        } else {
+            require(pendingReturns[_from].add(_value) > highestBid, "There already is a higher bid.");
+        }
 
         if (highestBid != 0) {
             pendingReturns[highestBidder] = pendingReturns[highestBidder].add(highestBid);
@@ -262,14 +268,15 @@ contract RootsDealRoom is Ownable {
     */
     function baseWithdrawToken(address _bidder) internal returns (bool) {
         uint amount = pendingReturns[_bidder];
-        if (amount > 0) {
-            pendingReturns[_bidder] = 0;
+        require(amount > 0);
 
-            if (!ERC20(tokenAddress).transfer(_bidder, amount)) {
-                pendingReturns[_bidder] = amount;
-                return false;
-            }
+        pendingReturns[_bidder] = 0;
+
+        if (!ERC20(tokenAddress).transfer(_bidder, amount)) {
+            pendingReturns[_bidder] = amount;
+            return false;
         }
+
         return true;
     }
 
@@ -288,6 +295,24 @@ contract RootsDealRoom is Ownable {
 
         //transfer highestBid tokens to beneficiary
         ERC20(tokenAddress).transfer(beneficiary, highestBid);
+    }
+
+    /**
+   * @dev fallback function when contract receive ether
+   */
+    function () external payable {
+        loadEther();
+    }
+
+    /**
+    * Load ether to the current deal
+    */
+    function loadEther() public payable {
+        require(now <= dealEndTime, "Deal already ended.");
+        require(msg.value > 0, "Should send ether.");
+
+        balance = balance.add(msg.value);
+        emit LoadEther(msg.sender, msg.value);
     }
 }
 
