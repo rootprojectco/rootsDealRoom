@@ -98,6 +98,25 @@ contract('RootsDealRoom test', async (accounts) => {
         assert.equal(_pendingReturns.valueOf(), 0);
     });
 
+    it("should increase bid (10) from account1", async () => {
+        tokenInstance.transfer(dealRoomInstance.address, 10, {from: account1});
+
+        let _balanceAccount1 = await tokenInstance.balanceOf(account1);
+        assert.equal(_balanceAccount1.valueOf(), 890);
+
+        let _balanceDealRoom = await tokenInstance.balanceOf(dealRoomInstance.address);
+        assert.equal(_balanceDealRoom.valueOf(), 110);
+
+        let _highestBidder = await dealRoomInstance.highestBidder();
+        assert.equal(_highestBidder, account1);
+
+        let _highestBid = await dealRoomInstance.highestBid();
+        assert.equal(_highestBid.valueOf(), 110);
+
+        let _pendingReturns = await dealRoomInstance.pendingReturns(account1);
+        assert.equal(_pendingReturns.valueOf(), 0);
+    });
+
     it("should not make small bid (50) from account2", async () => {
         let error1;
 
@@ -113,13 +132,13 @@ contract('RootsDealRoom test', async (accounts) => {
         assert.equal(_balanceAccount2.valueOf(), 1000);
 
         let _balanceDealRoom = await tokenInstance.balanceOf(dealRoomInstance.address);
-        assert.equal(_balanceDealRoom.valueOf(), 100);
+        assert.equal(_balanceDealRoom.valueOf(), 110);
 
         let _highestBidder = await dealRoomInstance.highestBidder();
         assert.equal(_highestBidder, account1);
 
         let _highestBid = await dealRoomInstance.highestBid();
-        assert.equal(_highestBid.valueOf(), 100);
+        assert.equal(_highestBid.valueOf(), 110);
 
         let _pendingReturns = await dealRoomInstance.pendingReturns(account2);
         assert.equal(_pendingReturns.valueOf(), 0);
@@ -132,7 +151,7 @@ contract('RootsDealRoom test', async (accounts) => {
         assert.equal(_balanceAccount3.valueOf(), 800);
 
         let _balanceDealRoom = await tokenInstance.balanceOf(dealRoomInstance.address);
-        assert.equal(_balanceDealRoom.valueOf(), 300);
+        assert.equal(_balanceDealRoom.valueOf(), 310);
 
         let _highestBidder = await dealRoomInstance.highestBidder();
         assert.equal(_highestBidder, account3);
@@ -141,7 +160,7 @@ contract('RootsDealRoom test', async (accounts) => {
         assert.equal(_highestBid.valueOf(), 200);
 
         let _pendingReturnsAccount1 = await dealRoomInstance.pendingReturns(account1);
-        assert.equal(_pendingReturnsAccount1.valueOf(), 100);
+        assert.equal(_pendingReturnsAccount1.valueOf(), 110);
 
         let _pendingReturnsAccount2 = await dealRoomInstance.pendingReturns(account2);
         assert.equal(_pendingReturnsAccount2.valueOf(), 0);
@@ -150,7 +169,7 @@ contract('RootsDealRoom test', async (accounts) => {
         assert.equal(_pendingReturnsAccount3.valueOf(), 0);
     });
 
-    it("should not make small bids (50 and 100) from account1", async () => {
+    it("should not make small bids (50 and 70) from account1", async () => {
         let error1;
         try {
             await tokenInstance.transfer(dealRoomInstance.address, 50, {from: account1});
@@ -161,7 +180,7 @@ contract('RootsDealRoom test', async (accounts) => {
 
         let error2;
         try {
-            await tokenInstance.transfer(dealRoomInstance.address, 100, {from: account1});
+            await tokenInstance.transfer(dealRoomInstance.address, 70, {from: account1});
         } catch (e) {
             error2 = e;
         }
@@ -172,16 +191,16 @@ contract('RootsDealRoom test', async (accounts) => {
         tokenInstance.transfer(dealRoomInstance.address, 120, {from: account1});
 
         let _balanceAccount1 = await tokenInstance.balanceOf(account1);
-        assert.equal(_balanceAccount1.valueOf(), 780);
+        assert.equal(_balanceAccount1.valueOf(), 770);
 
         let _balanceDealRoom = await tokenInstance.balanceOf(dealRoomInstance.address);
-        assert.equal(_balanceDealRoom.valueOf(), 420);
+        assert.equal(_balanceDealRoom.valueOf(), 430);
 
         let _highestBidder = await dealRoomInstance.highestBidder();
         assert.equal(_highestBidder, account1);
 
         let _highestBid = await dealRoomInstance.highestBid();
-        assert.equal(_highestBid.valueOf(), 220);
+        assert.equal(_highestBid.valueOf(), 230);
 
         let _pendingReturnsAccount1 = await dealRoomInstance.pendingReturns(account1);
         assert.equal(_pendingReturnsAccount1.valueOf(), 0);
@@ -197,13 +216,13 @@ contract('RootsDealRoom test', async (accounts) => {
         tokenInstance.transfer(dealRoomInstance.address, 250, {from: account2});
 
         let _balanceAccount1 = await tokenInstance.balanceOf(account1);
-        assert.equal(_balanceAccount1.valueOf(), 780);
+        assert.equal(_balanceAccount1.valueOf(), 770);
 
         let _balanceAccount2 = await tokenInstance.balanceOf(account2);
         assert.equal(_balanceAccount2.valueOf(), 750);
 
         let _balanceDealRoom = await tokenInstance.balanceOf(dealRoomInstance.address);
-        assert.equal(_balanceDealRoom.valueOf(), 670);
+        assert.equal(_balanceDealRoom.valueOf(), 680);
 
         let _highestBidder = await dealRoomInstance.highestBidder();
         assert.equal(_highestBidder, account2);
@@ -212,7 +231,35 @@ contract('RootsDealRoom test', async (accounts) => {
         assert.equal(_highestBid.valueOf(), 250);
 
         let _pendingReturnsAccount1 = await dealRoomInstance.pendingReturns(account1);
-        assert.equal(_pendingReturnsAccount1.valueOf(), 220);
+        assert.equal(_pendingReturnsAccount1.valueOf(), 230);
+
+        let _pendingReturnsAccount2 = await dealRoomInstance.pendingReturns(account2);
+        assert.equal(_pendingReturnsAccount2.valueOf(), 0);
+
+        let _pendingReturnsAccount3 = await dealRoomInstance.pendingReturns(account3);
+        assert.equal(_pendingReturnsAccount3.valueOf(), 200);
+    });
+
+    it("should increase bid (50) from account2", async () => {
+        tokenInstance.transfer(dealRoomInstance.address, 50, {from: account2});
+
+        let _balanceAccount1 = await tokenInstance.balanceOf(account1);
+        assert.equal(_balanceAccount1.valueOf(), 770);
+
+        let _balanceAccount2 = await tokenInstance.balanceOf(account2);
+        assert.equal(_balanceAccount2.valueOf(), 700);
+
+        let _balanceDealRoom = await tokenInstance.balanceOf(dealRoomInstance.address);
+        assert.equal(_balanceDealRoom.valueOf(), 730);
+
+        let _highestBidder = await dealRoomInstance.highestBidder();
+        assert.equal(_highestBidder, account2);
+
+        let _highestBid = await dealRoomInstance.highestBid();
+        assert.equal(_highestBid.valueOf(), 300);
+
+        let _pendingReturnsAccount1 = await dealRoomInstance.pendingReturns(account1);
+        assert.equal(_pendingReturnsAccount1.valueOf(), 230);
 
         let _pendingReturnsAccount2 = await dealRoomInstance.pendingReturns(account2);
         assert.equal(_pendingReturnsAccount2.valueOf(), 0);
@@ -238,7 +285,7 @@ contract('RootsDealRoom test', async (accounts) => {
         assert.equal(_balanceAccount3.valueOf(), 1000);
 
         let _balanceDealRoom = await tokenInstance.balanceOf(dealRoomInstance.address);
-        assert.equal(_balanceDealRoom.valueOf(), 470);
+        assert.equal(_balanceDealRoom.valueOf(), 530);
 
         let _pendingReturnsAccount3 = await dealRoomInstance.pendingReturns(account3);
         assert.equal(_pendingReturnsAccount3.valueOf(), 0);
@@ -262,34 +309,37 @@ contract('RootsDealRoom test', async (accounts) => {
         await dealRoomInstance.dealEnd({from: account1});
 
         let _balanceAccount1 = await tokenInstance.balanceOf(account1);
-        assert.equal(_balanceAccount1.valueOf(), 780);
+        assert.equal(_balanceAccount1.valueOf(), 770);
 
         let _balanceAccount2 = await tokenInstance.balanceOf(account2);
-        assert.equal(_balanceAccount2.valueOf(), 750);
+        assert.equal(_balanceAccount2.valueOf(), 700);
 
         let _balanceBeneficiary = await tokenInstance.balanceOf(beneficiary);
-        assert.equal(_balanceBeneficiary.valueOf(), 250);
+        assert.equal(_balanceBeneficiary.valueOf(), 300);
 
         let etherBalanceAccount2 = web3.eth.getBalance(account2);
         assert.equal(etherBalanceAccount2.valueOf() - etherBalanceAccount2Before.valueOf(), web3.toWei('3', 'ether'));
 
         let _balanceDealRoom = await tokenInstance.balanceOf(dealRoomInstance.address);
-        assert.equal(_balanceDealRoom.valueOf(), 220);
+        assert.equal(_balanceDealRoom.valueOf(), 230);
 
         let _highestBidder = await dealRoomInstance.highestBidder();
         assert.equal(_highestBidder, account2);
 
         let _highestBid = await dealRoomInstance.highestBid();
-        assert.equal(_highestBid.valueOf(), 250);
+        assert.equal(_highestBid.valueOf(), 300);
 
         let _pendingReturnsAccount1 = await dealRoomInstance.pendingReturns(account1);
-        assert.equal(_pendingReturnsAccount1.valueOf(), 220);
+        assert.equal(_pendingReturnsAccount1.valueOf(), 230);
 
         let _pendingReturnsAccount2 = await dealRoomInstance.pendingReturns(account2);
         assert.equal(_pendingReturnsAccount2.valueOf(), 0);
 
         let _pendingReturnsAccount3 = await dealRoomInstance.pendingReturns(account3);
         assert.equal(_pendingReturnsAccount3.valueOf(), 0);
+
+        let _ended = await dealRoomInstance.ended();
+        assert.equal(_ended.valueOf(), true);
     });
 
     it("should withdraw tokens from account1", async () => {
