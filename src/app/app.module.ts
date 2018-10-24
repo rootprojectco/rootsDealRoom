@@ -8,31 +8,33 @@ import { AppComponent } from './app.component';
 import { CommonModule } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
-  MatButtonModule,
-  MatCardModule,
-  MatFormFieldModule,
-  MatInputModule,
-  MatToolbarModule
-} from '@angular/material';
-
-@NgModule({
-  declarations: [
-    AppComponent
-  ],
-  imports: [
-    BrowserAnimationsModule,
-    CommonModule,
     MatButtonModule,
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
-    MatToolbarModule,
-    BrowserModule,
-    FormsModule,
-    HttpClientModule
-    //MetaModule
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
+    MatToolbarModule
+} from '@angular/material';
+import {AppRoutingModule} from "./app-routing.module";
+
+@NgModule({
+    declarations: [
+        AppComponent
+    ],
+    imports: [
+        BrowserAnimationsModule,
+        CommonModule,
+        MatButtonModule,
+        MatCardModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatToolbarModule,
+        BrowserModule,
+        AppRoutingModule,
+        FormsModule,
+        HttpClientModule
+        //MetaModule
+    ],
+    providers: [],
+    bootstrap: [AppComponent]
 })
 export class AppModule { }
