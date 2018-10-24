@@ -1,0 +1,11 @@
+<mat-card class="deal-card" routerLink="/address/{{ dealRoom.address }}">
+  <mat-card-header>
+    <mat-card-title>{{dealRoom.balance}} ETH</mat-card-title>
+    <mat-card-subtitle>{{ dealRoom.address }}</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <p>
+      Highest bid: {{ dealRoom.highestBid}} ROOTS
+    </p>
+  </mat-card-content>
+</mat-card>

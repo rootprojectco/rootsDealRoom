@@ -15,10 +15,18 @@ import {
     MatToolbarModule
 } from '@angular/material';
 import {AppRoutingModule} from "./app-routing.module";
+import { ListComponent } from './list/list.component';
+import { DealRoomCardComponent } from './deal-room-card/deal-room-card.component';
+import { DealRoomDetailsComponent } from './deal-room-details/deal-room-details.component';
+import { CreateComponent } from './create/create.component';
 
 @NgModule({
     declarations: [
-        AppComponent
+        AppComponent,
+        ListComponent,
+        DealRoomCardComponent,
+        DealRoomDetailsComponent,
+        CreateComponent
     ],
     imports: [
         BrowserAnimationsModule,
