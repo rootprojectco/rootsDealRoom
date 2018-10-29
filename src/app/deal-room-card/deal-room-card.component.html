@@ -5,7 +5,10 @@
   </mat-card-header>
   <mat-card-content>
     <p>
-      Highest bid: {{ dealRoom.highestBid}} ROOTS
+      Highest bid: {{ dealRoom.highestBid }} ROOTS
+    </p>
+    <p>
+      End date: {{ dealRoom.dealEndTime | date: 'yyyy-MM-dd hh:mm:ss' }}
     </p>
   </mat-card-content>
 </mat-card>

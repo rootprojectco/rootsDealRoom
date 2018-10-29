@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {DealRoom} from "../deal-room";
+import {DealsService} from "../deals/deals.service";
 
 @Component({
     selector: 'app-list',
@@ -8,29 +9,21 @@ import {DealRoom} from "../deal-room";
 })
 export class ListComponent implements OnInit {
 
-    constructor() { }
+    constructor(
+      private dealsService: DealsService
+    ) { }
 
     title = 'List of Deal rooms!';
 
     dealRooms: DealRoom[] = [];
+    currentPage: number = 1;
 
-    ngOnInit() {
-        this.dealRooms = [{
-            address: "0x012345678900011",
-            beneficiary: "0x0123456789000",
-            dealEndTime: new Date(),
-            balance: "0.15",
-            highestBidder: "0x0123456789555",
-            highestBid: "150",
-            ended: false
-        }, {
-            address: "0x012345678911122",
-            beneficiary: "0x0123456789111",
-            dealEndTime: new Date(),
-            balance: "3.5",
-            highestBidder: "0x0123456789666",
-            highestBid: "1800",
-            ended: true
-        }];
+    async ngOnInit() {
+
+      this.dealsService.deals.length = 0;
+
+      this.dealRooms = this.dealsService.deals;
+      await this.dealsService.getDeals(1);
+
     }
 }

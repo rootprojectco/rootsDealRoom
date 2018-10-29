@@ -14,6 +14,7 @@ export class DealRoomDetailsComponent implements OnInit {
 
     ngOnInit() {
         this.dealRoom = {
+          contract: "",
             address: "0x012345678911122",
             beneficiary: "0x0123456789111",
             dealEndTime: new Date(),

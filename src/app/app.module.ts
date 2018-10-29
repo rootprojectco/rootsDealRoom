@@ -19,6 +19,7 @@ import { ListComponent } from './list/list.component';
 import { DealRoomCardComponent } from './deal-room-card/deal-room-card.component';
 import { DealRoomDetailsComponent } from './deal-room-details/deal-room-details.component';
 import { CreateComponent } from './create/create.component';
+import {Web3Service} from "./util/web3.service";
 
 @NgModule({
     declarations: [
@@ -42,7 +43,7 @@ import { CreateComponent } from './create/create.component';
         HttpClientModule
         //MetaModule
     ],
-    providers: [],
+    providers: [Web3Service],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
