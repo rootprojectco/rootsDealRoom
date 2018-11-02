@@ -15,15 +15,22 @@ export class ListComponent implements OnInit {
 
     title = 'List of Deal rooms!';
 
-    dealRooms: DealRoom[] = [];
+    dealRooms: { [key: string]: DealRoom } = {};
     currentPage: number = 1;
 
     async ngOnInit() {
 
-      this.dealsService.deals.length = 0;
-
       this.dealRooms = this.dealsService.deals;
       await this.dealsService.getDeals(1);
 
+    }
+
+    extractDeals() {
+      let returnArray = [];
+      for(var address in this.dealRooms) {
+        returnArray.push(this.dealRooms[address]);
+      }
+
+      return returnArray;
     }
 }

@@ -2,4 +2,7 @@ mat-toolbar a {
   color: azure;
   text-decoration: none;
 }
+mat-toolbar .toolbar-spacer {
+  flex: 1 1 auto;
+}
 /*# sourceMappingURL=app.component.css.map */

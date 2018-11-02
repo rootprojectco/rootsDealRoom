@@ -1,11 +1,21 @@
-<mat-card class="deal-card" routerLink="/address/{{ dealRoom.address }}">
+<mat-card class="deal-card" *ngIf="dealRoom">
   <mat-card-header>
     <mat-card-title>{{dealRoom.balance}} ETH</mat-card-title>
     <mat-card-subtitle>{{ dealRoom.address }}</mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
+    <qrcode [qrdata]="dealRoom.address" [size]="350" [level]="'M'"></qrcode>
     <p>
-      Highest bid: {{ dealRoom.highestBid}} ROOTS
+      Highest bid: {{ dealRoom.highestBid }} ROOTS
+    </p>
+    <p *ngIf="dealRoom.highestBidder != '0x0000000000000000000000000000000000000000'">
+      Highest bidder: {{ dealRoom.highestBidder }}
+    </p>
+    <p>
+      End date: {{ dealRoom.dealEndTime | date: 'yyyy-MM-dd hh:mm:ss' }}
+    </p>
+    <p>
+      Beneficiary: {{ dealRoom.beneficiary }}
     </p>
   </mat-card-content>
 </mat-card>

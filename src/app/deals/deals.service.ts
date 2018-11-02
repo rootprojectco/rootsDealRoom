@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import {Observable} from "rxjs";
 import {DealRoom} from "../deal-room";
 import {Web3Service} from "../util/web3.service";
 const Web3 = require('web3');
@@ -11,7 +12,7 @@ const dealsRoom_artifacts = require('../../../build/contracts/RootsDealRoom.json
   providedIn: 'root'
 })
 export class DealsService {
-  public deals: DealRoom[] = [];
+  public deals: { [key: string]: DealRoom } = {};
   private DealsRoomFactory: any;
 
   private itemsPerPage: number = 10;
@@ -44,8 +45,8 @@ export class DealsService {
         if (i >= numDeals || dealAddress == '0x') {
           break;
         }
-        this.deals.push(await this.getDealRoomByAddress(dealAddress));
-
+        // this.deals[dealAddress] = await this.getDealRoomByAddress(dealAddress);
+        this.addDeal(dealAddress, await this.getDealRoomByAddress(dealAddress));
       }
 
       return true;
@@ -55,14 +56,32 @@ export class DealsService {
     }
   }
 
+  protected addDeal(address: string, dealRoom: DealRoom) {
+    if (this.deals[address]) {
+      this.deals[address].setParams(dealRoom);
+    } else {
+      this.deals[address] = dealRoom;
+    }
+  }
+
+  public getDeal(address): Promise<DealRoom> {
+    let self = this;
+    let promise: Promise<DealRoom> = new Promise((resolve, reject) => {
+      if (self.deals[address]) {
+        resolve(self.deals[address]);
+      } else {
+        reject({error: 'do not found deal room by address'});
+      }
+    });
+    return promise;
+  }
+
   private async getDealRoomByAddress(address) {
     let DealRoomAbstractContract: any = await this.getContractPromise(dealsRoom_artifacts);
     let DealRoomContract = await DealRoomAbstractContract.at(address);
 
-    let dealRoom: DealRoom = {
-      address: address,
-      contract: DealRoomContract
-    };
+    let dealRoom: DealRoom = new DealRoom(address, DealRoomContract);
+
     dealRoom.balance = this.web3Service.web3.utils.fromWei((await DealRoomContract.balance()).valueOf(), 'ether');
     dealRoom.beneficiary = await DealRoomContract.beneficiary();
     dealRoom.dealEndTime = new Date((await DealRoomContract.dealEndTime()).valueOf() * 1000);

@@ -8,11 +8,11 @@ import { AppComponent } from './app.component';
 import { CommonModule } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
-    MatButtonModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatToolbarModule
+  MatButtonModule,
+  MatCardModule,
+  MatFormFieldModule, MatIconModule,
+  MatInputModule,
+  MatToolbarModule
 } from '@angular/material';
 import {AppRoutingModule} from "./app-routing.module";
 import { ListComponent } from './list/list.component';
@@ -20,6 +20,7 @@ import { DealRoomCardComponent } from './deal-room-card/deal-room-card.component
 import { DealRoomDetailsComponent } from './deal-room-details/deal-room-details.component';
 import { CreateComponent } from './create/create.component';
 import {Web3Service} from "./util/web3.service";
+import { QRCodeModule } from 'angularx-qrcode';
 
 @NgModule({
     declarations: [
@@ -33,6 +34,7 @@ import {Web3Service} from "./util/web3.service";
         BrowserAnimationsModule,
         CommonModule,
         MatButtonModule,
+        MatIconModule,
         MatCardModule,
         MatFormFieldModule,
         MatInputModule,
@@ -40,7 +42,8 @@ import {Web3Service} from "./util/web3.service";
         BrowserModule,
         AppRoutingModule,
         FormsModule,
-        HttpClientModule
+        HttpClientModule,
+        QRCodeModule
         //MetaModule
     ],
     providers: [Web3Service],
