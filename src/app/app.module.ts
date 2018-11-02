@@ -9,9 +9,9 @@ import { CommonModule } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
   MatButtonModule,
-  MatCardModule,
+  MatCardModule, MatDatepickerModule, MatFormFieldControl,
   MatFormFieldModule, MatIconModule,
-  MatInputModule,
+  MatInputModule, MatNativeDateModule,
   MatToolbarModule
 } from '@angular/material';
 import {AppRoutingModule} from "./app-routing.module";
@@ -21,32 +21,36 @@ import { DealRoomDetailsComponent } from './deal-room-details/deal-room-details.
 import { CreateComponent } from './create/create.component';
 import {Web3Service} from "./util/web3.service";
 import { QRCodeModule } from 'angularx-qrcode';
+import {NgxMaterialTimepickerModule} from "ngx-material-timepicker";
 
 @NgModule({
-    declarations: [
-        AppComponent,
-        ListComponent,
-        DealRoomCardComponent,
-        DealRoomDetailsComponent,
-        CreateComponent
-    ],
-    imports: [
-        BrowserAnimationsModule,
-        CommonModule,
-        MatButtonModule,
-        MatIconModule,
-        MatCardModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatToolbarModule,
-        BrowserModule,
-        AppRoutingModule,
-        FormsModule,
-        HttpClientModule,
-        QRCodeModule
-        //MetaModule
-    ],
-    providers: [Web3Service],
-    bootstrap: [AppComponent]
+  declarations: [
+    AppComponent,
+    ListComponent,
+    DealRoomCardComponent,
+    DealRoomDetailsComponent,
+    CreateComponent
+  ],
+  imports: [
+    BrowserAnimationsModule,
+    CommonModule,
+    MatButtonModule,
+    MatIconModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatToolbarModule,
+    BrowserModule,
+    AppRoutingModule,
+    FormsModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    HttpClientModule,
+    QRCodeModule,
+    NgxMaterialTimepickerModule.forRoot(),
+    //MetaModule
+  ],
+  providers: [Web3Service],
+  bootstrap: [AppComponent]
 })
 export class AppModule { }

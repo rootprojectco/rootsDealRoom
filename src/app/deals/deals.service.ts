@@ -76,6 +76,10 @@ export class DealsService {
     return promise;
   }
 
+  public createDeal(beneficiary, dateEnd, amount) {
+    this.DealsRoomFactory.create(beneficiary, (dateEnd.getTime()/1000), { from: this.web3Service.accounts[0] });
+  }
+
   private async getDealRoomByAddress(address) {
     let DealRoomAbstractContract: any = await this.getContractPromise(dealsRoom_artifacts);
     let DealRoomContract = await DealRoomAbstractContract.at(address);

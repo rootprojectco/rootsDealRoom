@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {DealsService} from "../deals/deals.service";
 
 @Component({
   selector: 'app-create',
@@ -7,9 +8,31 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CreateComponent implements OnInit {
 
-  constructor() { }
+  form: any = {
+    beneficiary: "",
+    dateEnd: "",
+    timeEnd: ""
+  };
+
+  constructor(
+    protected dealsService: DealsService
+  ) { }
 
   ngOnInit() {
+  }
+
+  async create() {
+    await this.dealsService.setDealsRoomFactory();
+
+    let dateEnd = new Date(this.form.dateEnd);
+    if (this.form.timeEnd) {
+      let hours = this.form.timeEnd.split(':')[0];
+      let minutes = this.form.timeEnd.split(':')[1];
+      dateEnd.setHours(hours);
+      dateEnd.setMinutes(minutes);
+    }
+
+    this.dealsService.createDeal(this.form.beneficiary, dateEnd, 0)
   }
 
 }

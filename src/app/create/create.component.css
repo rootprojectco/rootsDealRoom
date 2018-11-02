@@ -1,0 +1,12 @@
+.create-form {
+  display: flex;
+  flex-direction: column;
+}
+.create-form .form-element {
+  margin: 10px;
+}
+.create-form .form-element .mat-form-field {
+  width: 100%;
+  max-width: 500px;
+}
+/*# sourceMappingURL=create.component.css.map */
