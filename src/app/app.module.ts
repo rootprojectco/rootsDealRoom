@@ -12,6 +12,7 @@ import {
   MatCardModule, MatDatepickerModule, MatFormFieldControl,
   MatFormFieldModule, MatIconModule,
   MatInputModule, MatNativeDateModule,
+  MatProgressSpinnerModule,
   MatToolbarModule
 } from '@angular/material';
 import {AppRoutingModule} from "./app-routing.module";
@@ -45,6 +46,7 @@ import {NgxMaterialTimepickerModule} from "ngx-material-timepicker";
     FormsModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatProgressSpinnerModule,
     HttpClientModule,
     QRCodeModule,
     NgxMaterialTimepickerModule.forRoot(),

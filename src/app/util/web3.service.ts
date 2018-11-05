@@ -10,9 +10,9 @@ declare let window: any;
 @Injectable()
 export class Web3Service {
   public web3: any;
+  public isWeb3Ready = false;
   public accounts: string[];
   public ready = false;
-  public MetaCoin: any;
   public accountsObservable = new Subject<string[]>();
 
   constructor() {
@@ -26,16 +26,27 @@ export class Web3Service {
     if (typeof window.web3 !== 'undefined') {
       // Use Mist/MetaMask's provider
       this.web3 = new Web3(window.web3.currentProvider);
+      this.isWeb3Ready = true;
+      this.startRefreshAccounts();
     } else {
       console.log('No web3? You should consider trying MetaMask!');
 
-      // Hack to provide backwards compatibility for Truffle, which uses web3js 0.20.x
-      Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send;
-      // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
-      this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
-    }
+      try {
+        // Hack to provide backwards compatibility for Truffle, which uses web3js 0.20.x
+        Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send;
+        // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
+        this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
 
-    setInterval(() => this.refreshAccounts(), 100);
+        this.web3.eth.isSyncing().then(() => {
+          this.isWeb3Ready = true;
+          this.startRefreshAccounts();
+        }).catch(() => {
+          console.error('Couldn\'t connect to web3 provider');
+        });
+      } catch (e) {
+        console.error('Couldn\'t connect to web3 provider');
+      }
+    }
   }
 
   public async artifactsToContract(artifacts) {
@@ -49,6 +60,10 @@ export class Web3Service {
     contractAbstraction.setProvider(this.web3.currentProvider);
     return contractAbstraction;
 
+  }
+
+  private startRefreshAccounts() {
+    setInterval(() => this.refreshAccounts(), 100);
   }
 
   private refreshAccounts() {
@@ -73,6 +88,28 @@ export class Web3Service {
       }
 
       this.ready = true;
+    });
+  }
+
+  public isWeb3Connected() {
+    return new Promise((resolve, reject) => {
+      if (this.isWeb3Ready) {
+        resolve(true);
+      } else {
+        let tryCount = 0;
+        let interval = setInterval(() => {
+            tryCount++;
+            if (tryCount > 30) {
+              clearInterval(interval);
+              resolve(false);
+            }
+
+            if (this.isWeb3Ready) {
+              clearInterval(interval);
+              resolve(true);
+            }
+          }, 100);
+      }
     });
   }
 }

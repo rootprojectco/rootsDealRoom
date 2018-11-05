@@ -7,4 +7,24 @@
 
 </mat-toolbar>
 
-<router-outlet></router-outlet>
+<div class="install-metamask" *ngIf="state == 'noWeb3'">
+  <h2>Use a Web3 Supported Wallet</h2>
+
+  <p><b>ROOTS Deals Room</b> is a smart-contracts which allow users to participate in auctions for buying and selling ROOTS tokens. We use a standard protocol called Web3 to enable this service.</p>
+
+  <p>In order to be able to use your blockchain wallet (some refer to this as a MyEtherWallet account), you will need to use the MetaMask browser add-on.</p>
+
+  <p><b>Step 1: Download the Appropriate Browser</b></p>
+  <p>MetaMask currently only supports Chrome, Firefox or Opera and does not operate on mobile or tablets. You will need to have one of these browsers before we proceed.</p>
+
+  <p><a href="https://www.google.com/chrome/" target="_blank">Download Chrome</a> | <a href="https://www.mozilla.org/en-US/firefox/new/" target="_blank">Download Firefox</a> | <a href="https://www.opera.com/" target="_blank">Download Opera</a></p>
+
+  <p><b>Step 2: Install MetaMask</b></p>
+  <p>Click on the link below in order to download the MetaMask addon directly from their website.</p>
+
+  <p><a href="https://metamask.io/" target="_blank">MetaMask website</a></p>
+
+  <p>Thank you!</p>
+</div>
+
+<router-outlet *ngIf="state == 'ready'"></router-outlet>
