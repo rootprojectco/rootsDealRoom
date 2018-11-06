@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import {Observable} from "rxjs";
-import {DealRoom} from "../deal-room";
-import {Web3Service} from "../util/web3.service";
+import {Observable} from 'rxjs';
+import {DealRoom} from '../deal-room';
+import {Web3Service} from '../util/web3.service';
 const Web3 = require('web3');
 
 declare let require: any;
@@ -9,102 +9,141 @@ const dealsRoomFactory_artifacts = require('../../../build/contracts/RootsDealRo
 const dealsRoom_artifacts = require('../../../build/contracts/RootsDealRoom.json');
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class DealsService {
-  public deals: { [key: string]: DealRoom } = {};
-  private DealsRoomFactory: any;
+    public deals: { [key: string]: DealRoom } = {};
+    public countDeals = 0;
+    private DealsRoomFactory: any;
 
-  private itemsPerPage: number = 10;
+    constructor(
+        private web3Service: Web3Service
+    ) {
 
-  constructor(
-      private web3Service: Web3Service
-  ) {
-
-  }
-
-  async setDealsRoomFactory() {
-    if (!this.DealsRoomFactory) {
-      console.log("IF");
-      let DealsRoomFactoryContract: any = await this.getContractPromise(dealsRoomFactory_artifacts);
-      this.DealsRoomFactory = await DealsRoomFactoryContract.deployed();
     }
-  }
 
-  async getDeals(page) {
-    await this.setDealsRoomFactory();
-
-    try {
-      let numDeals = await this.DealsRoomFactory.numDeals().valueOf();
-
-      let from = (page-1) * this.itemsPerPage;
-      let to = page * this.itemsPerPage;
-
-      for (let i = from; i < to; i++) {
-        let dealAddress = await this.DealsRoomFactory.dealsAddr(i);
-        if (i >= numDeals || dealAddress == '0x') {
-          break;
+    async setDealsRoomFactory() {
+        if (!this.DealsRoomFactory) {
+            const DealsRoomFactoryContract: any = await this.getContractPromise(dealsRoomFactory_artifacts);
+            this.DealsRoomFactory = await DealsRoomFactoryContract.deployed();
         }
-        // this.deals[dealAddress] = await this.getDealRoomByAddress(dealAddress);
-        this.addDeal(dealAddress, await this.getDealRoomByAddress(dealAddress));
-      }
-
-      return true;
-
-    } catch (e) {
-      console.log(e);
     }
-  }
 
-  protected addDeal(address: string, dealRoom: DealRoom) {
-    if (this.deals[address]) {
-      this.deals[address].setParams(dealRoom);
-    } else {
-      this.deals[address] = dealRoom;
+    async getDeals(from, to) {
+        await this.setDealsRoomFactory();
+
+        try {
+            let dealsReturn = [];
+            this.countDeals = await this.DealsRoomFactory.numDeals().valueOf();
+
+            for (let i = from; i <= to; i++) {
+                const dealAddress = await this.DealsRoomFactory.dealsAddr(i);
+                if (i >= this.countDeals || dealAddress == '0x') {
+                    break;
+                }
+
+                let dealAddressContract = await this.getDealRoomContractByAddress(dealAddress);
+
+                let dealModel = new DealRoom(dealAddress, dealAddressContract);
+                this.updateDealModel(dealAddress, dealModel);
+
+                this.getDealRoomByAddress(dealAddress).then((item) => {
+                    this.updateDealModel(dealAddress, item);
+                });
+
+                dealsReturn.push(this.deals[dealAddress]);
+            }
+
+            return dealsReturn;
+
+        } catch (e) {
+            console.log(e);
+        }
     }
-  }
 
-  public getDeal(address): Promise<DealRoom> {
-    let self = this;
-    let promise: Promise<DealRoom> = new Promise((resolve, reject) => {
-      if (self.deals[address]) {
-        resolve(self.deals[address]);
-      } else {
-        reject({error: 'do not found deal room by address'});
-      }
-    });
-    return promise;
-  }
+    async getNumDeals() {
+        await this.setDealsRoomFactory();
 
-  public createDeal(beneficiary, dateEnd, amount) {
-    this.DealsRoomFactory.create(beneficiary, (dateEnd.getTime()/1000), { from: this.web3Service.accounts[0] });
-  }
+        try {
+            const numDeals = await this.DealsRoomFactory.numDeals();
+            return parseInt(numDeals.valueOf());
+        } catch (e) {
+            console.log(e);
+        }
+    }
 
-  private async getDealRoomByAddress(address) {
-    let DealRoomAbstractContract: any = await this.getContractPromise(dealsRoom_artifacts);
-    let DealRoomContract = await DealRoomAbstractContract.at(address);
+    protected updateDealModel(address: string, dealRoom: DealRoom) {
+        if (this.deals[address]) {
+            this.deals[address].setParams(dealRoom);
+        } else {
+            this.deals[address] = dealRoom;
+        }
+    }
 
-    let dealRoom: DealRoom = new DealRoom(address, DealRoomContract);
+    public async getDeal(address) {
+        const self = this;
+        if (self.deals[address]) {
+            this.updateDealModel(address, self.deals[address]);
+            return self.deals[address];
+        } else {
+            try {
+                const dealAddressContract = await this.getDealRoomContractByAddress(address);
 
-    dealRoom.balance = this.web3Service.web3.utils.fromWei((await DealRoomContract.balance()).valueOf(), 'ether');
-    dealRoom.beneficiary = await DealRoomContract.beneficiary();
-    dealRoom.dealEndTime = new Date((await DealRoomContract.dealEndTime()).valueOf() * 1000);
-    dealRoom.highestBidder = await DealRoomContract.highestBidder();
-    dealRoom.highestBid = this.web3Service.web3.utils.fromWei((await DealRoomContract.highestBid()).valueOf(), 'ether');
-    dealRoom.ended = await DealRoomContract.ended();
+                const dealModel = new DealRoom(address, dealAddressContract);
+                this.updateDealModel(address, dealModel);
 
-    console.log("NEW dealRoom", dealRoom);
+                this.getDealRoomByAddress(address).then((item) => {
+                    this.updateDealModel(address, item);
+                });
 
-    return dealRoom;
-  }
+                return this.deals[address];
+            } catch (e) {
+                throw {error: 'do not found deal room by address - ' + address};
+            }
+        }
+    }
 
-  private getContractPromise(artifacts) {
-    let self = this;
-    return new Promise(async (resolve, reject) => {
-      await self.web3Service.artifactsToContract(artifacts)
-        .then((ContractAbstraction) => {
-          resolve(ContractAbstraction);
+    public createDeal(beneficiary, dateEnd, amount) {
+        this.DealsRoomFactory.create(beneficiary, (dateEnd.getTime() / 1000), { from: this.web3Service.accounts[0] });
+    }
+
+    private async getDealRoomByAddress(address) {
+        try {
+            let DealRoomContract = await this.getDealRoomContractByAddress(address);
+
+            let dealRoom: DealRoom = new DealRoom(address, DealRoomContract);
+
+            dealRoom.balance = this.web3Service.web3.utils.fromWei((await DealRoomContract.balance()).valueOf(), 'ether');
+            dealRoom.beneficiary = await DealRoomContract.beneficiary();
+            dealRoom.dealEndTime = new Date((await DealRoomContract.dealEndTime()).valueOf() * 1000);
+            dealRoom.highestBidder = await DealRoomContract.highestBidder();
+            dealRoom.highestBid = this.web3Service.web3.utils.fromWei((await DealRoomContract.highestBid()).valueOf(), 'ether');
+            dealRoom.ended = await DealRoomContract.ended();
+            dealRoom.loaded = true;
+
+            console.log("NEW dealRoom", dealRoom);
+
+            return dealRoom;
+        } catch (error) {
+            console.log('ERROR getDealRoomByAddress', error);
+            throw error;
+        }
+    }
+
+    private async getDealRoomContractByAddress(address) {
+        let DealRoomAbstractContract: any = await this.getContractPromise(dealsRoom_artifacts);
+        let DealRoomContract = await DealRoomAbstractContract.at(address);
+
+        return DealRoomContract;
+    }
+
+    private getContractPromise(artifacts) {
+        let self = this;
+        return new Promise(async (resolve, reject) => {
+            await self.web3Service.artifactsToContract(artifacts)
+                .then((ContractAbstraction) => {
+                    resolve(ContractAbstraction);
+                });
         });
-    });
-  }
+    }
 }

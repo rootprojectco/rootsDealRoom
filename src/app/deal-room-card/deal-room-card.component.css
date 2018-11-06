@@ -1,5 +1,10 @@
 .deal-card {
-  max-width: 400px;
+  width: 400px;
+  height: 275px;
   cursor: pointer;
+}
+.deal-card mat-spinner {
+  margin: 10vh auto;
+  display: block;
 }
 /*# sourceMappingURL=deal-room-card.component.css.map */

@@ -1,1 +1,6 @@
-<app-deal-room-card *ngFor="let dealRoom of extractDeals()" [dealRoom]="dealRoom"></app-deal-room-card>
+<app-deal-room-card *ngFor="let dealRoom of dealsStorage.dealRooms" [dealRoom]="dealRoom"></app-deal-room-card>
+
+<mat-paginator [length]="dealsStorage.countDeals"
+               [pageSize]="dealsStorage.pageSize"
+               (page)="pageEvent = changePage($event)">
+</mat-paginator>

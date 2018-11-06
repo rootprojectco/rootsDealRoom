@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {DealRoom} from "../deal-room";
 import {DealsService} from "../deals/deals.service";
+import {PageEvent} from "@angular/material";
+import {DealsStorageService} from "../deals/deals-storage.service";
 
 @Component({
     selector: 'app-list',
@@ -10,27 +12,33 @@ import {DealsService} from "../deals/deals.service";
 export class ListComponent implements OnInit {
 
     constructor(
-      private dealsService: DealsService
+        private dealsService: DealsService,
+        public dealsStorage: DealsStorageService
     ) { }
 
-    title = 'List of Deal rooms!';
+    currentPageIndex = 0;
+    countDeals = 0;
+    pageSize = 30;
+    loading = true;
 
-    dealRooms: { [key: string]: DealRoom } = {};
-    currentPage: number = 1;
+    pageEvent: PageEvent;
 
     async ngOnInit() {
 
-      this.dealRooms = this.dealsService.deals;
-      await this.dealsService.getDeals(1);
+        this.countDeals = this.dealsStorage.countDeals;
+        this.currentPageIndex = this.dealsStorage.currentPageIndex;
+        this.pageSize = this.dealsStorage.pageSize;
 
+        this.loading = true;
+        await this.dealsStorage.getDealsForPage();
+        this.loading = false;
     }
 
-    extractDeals() {
-      let returnArray = [];
-      for(var address in this.dealRooms) {
-        returnArray.push(this.dealRooms[address]);
-      }
+    getDeals() {
+        return this.dealsStorage.dealRooms;
+    }
 
-      return returnArray;
+    changePage(e: any) {
+        console.log('PAGE CHANGE', e);
     }
 }

@@ -8,6 +8,7 @@ export class DealRoom {
   highestBidder?: string;
   highestBid?: string;
   ended?: boolean;
+  loaded?: boolean;
 
   constructor(address, DealRoomContract) {
     this.address = address;
@@ -23,5 +24,6 @@ export class DealRoom {
     this.highestBidder = params.highestBidder;
     this.highestBid = params.highestBid;
     this.ended = params.ended;
+    this.loaded = params.loaded;
   }
 }

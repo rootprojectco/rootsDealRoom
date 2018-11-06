@@ -8,12 +8,12 @@ import { AppComponent } from './app.component';
 import { CommonModule } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
-  MatButtonModule,
-  MatCardModule, MatDatepickerModule, MatFormFieldControl,
-  MatFormFieldModule, MatIconModule,
-  MatInputModule, MatNativeDateModule,
-  MatProgressSpinnerModule,
-  MatToolbarModule
+    MatButtonModule,
+    MatCardModule, MatDatepickerModule, MatFormFieldControl,
+    MatFormFieldModule, MatIconModule,
+    MatInputModule, MatNativeDateModule, MatPaginatorModule,
+    MatProgressSpinnerModule,
+    MatToolbarModule
 } from '@angular/material';
 import {AppRoutingModule} from "./app-routing.module";
 import { ListComponent } from './list/list.component';
@@ -25,34 +25,34 @@ import { QRCodeModule } from 'angularx-qrcode';
 import {NgxMaterialTimepickerModule} from "ngx-material-timepicker";
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    ListComponent,
-    DealRoomCardComponent,
-    DealRoomDetailsComponent,
-    CreateComponent
-  ],
-  imports: [
-    BrowserAnimationsModule,
-    CommonModule,
-    MatButtonModule,
-    MatIconModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatToolbarModule,
-    BrowserModule,
-    AppRoutingModule,
-    FormsModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatProgressSpinnerModule,
-    HttpClientModule,
-    QRCodeModule,
-    NgxMaterialTimepickerModule.forRoot(),
-    //MetaModule
-  ],
-  providers: [Web3Service],
-  bootstrap: [AppComponent]
+    declarations: [
+        AppComponent,
+        ListComponent,
+        DealRoomCardComponent,
+        DealRoomDetailsComponent,
+        CreateComponent
+    ],
+    imports: [
+        BrowserAnimationsModule,
+        CommonModule,
+        MatButtonModule,
+        MatIconModule,
+        MatCardModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatToolbarModule,
+        BrowserModule,
+        AppRoutingModule,
+        FormsModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
+        MatProgressSpinnerModule,
+        MatPaginatorModule,
+        HttpClientModule,
+        QRCodeModule,
+        NgxMaterialTimepickerModule.forRoot(),
+    ],
+    providers: [Web3Service],
+    bootstrap: [AppComponent]
 })
 export class AppModule { }
