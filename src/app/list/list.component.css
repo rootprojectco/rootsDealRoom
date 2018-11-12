@@ -2,5 +2,16 @@ app-deal-room-card {
   position: relative;
   display: inline-block;
   padding: 15px;
+  float: left;
+}
+mat-paginator {
+  float: left;
+}
+.clear-fix {
+  clear: both;
+}
+.loading-block mat-spinner {
+  margin: 10vh auto;
+  display: block;
 }
 /*# sourceMappingURL=list.component.css.map */

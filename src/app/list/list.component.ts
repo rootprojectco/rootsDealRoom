@@ -16,29 +16,22 @@ export class ListComponent implements OnInit {
         public dealsStorage: DealsStorageService
     ) { }
 
-    currentPageIndex = 0;
-    countDeals = 0;
-    pageSize = 30;
     loading = true;
 
     pageEvent: PageEvent;
 
     async ngOnInit() {
-
-        this.countDeals = this.dealsStorage.countDeals;
-        this.currentPageIndex = this.dealsStorage.currentPageIndex;
-        this.pageSize = this.dealsStorage.pageSize;
-
         this.loading = true;
         await this.dealsStorage.getDealsForPage();
         this.loading = false;
     }
 
-    getDeals() {
-        return this.dealsStorage.dealRooms;
-    }
-
-    changePage(e: any) {
-        console.log('PAGE CHANGE', e);
+    async changePage(e: any) {
+        this.dealsStorage.currentPageIndex = e.pageIndex;
+        if (!this.dealsStorage.dealsByPages[this.dealsStorage.currentPageIndex]) {
+            this.loading = true;
+        }
+        await this.dealsStorage.getDealsForPage();
+        this.loading = false;
     }
 }

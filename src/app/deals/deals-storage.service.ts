@@ -11,7 +11,7 @@ export class DealsStorageService {
 
     currentPageIndex = 0;
     countDeals = 0;
-    pageSize = 30;
+    pageSize = 3;
 
     constructor(
         private dealsService: DealsService
@@ -20,12 +20,13 @@ export class DealsStorageService {
     }
 
     async getDealsForPage() {
+        this.dealRooms = this.dealsByPages[this.currentPageIndex];
         if (this.countDeals == 0) {
             this.countDeals = await this.dealsService.getNumDeals();
         }
 
-        let from = this.countDeals + 1 - (this.currentPageIndex + 1) * this.pageSize;
-        let to = this.countDeals - (this.currentPageIndex) * this.pageSize;
+        let from = this.countDeals - (this.currentPageIndex + 1) * this.pageSize;
+        let to = this.countDeals - 1 - (this.currentPageIndex) * this.pageSize;
 
         if (from < 0) {
             from = 0;

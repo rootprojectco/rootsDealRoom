@@ -12,7 +12,7 @@
     </mat-form-field>
   </div>
   <div class="form-element">
-    <input placeholder="Choose end time" aria-label="Choose end time" [ngxTimepicker]="fullTime" [format]="24" readonly [(ngModel)]="form.timeEnd" name="timeEnd">
+    <input placeholder="Choose end time" aria-label="Choose end time" [ngxTimepicker]="fullTime" [format]="24" readonly [(ngModel)]="form.timeEnd" name="timeEnd" class="choose_time">
     <ngx-material-timepicker #fullTime></ngx-material-timepicker>
   </div>
 

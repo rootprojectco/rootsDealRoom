@@ -1,5 +1,12 @@
 <app-deal-room-card *ngFor="let dealRoom of dealsStorage.dealRooms" [dealRoom]="dealRoom"></app-deal-room-card>
 
+<div class="loading-block" *ngIf="loading">
+    <mat-spinner></mat-spinner>
+</div>
+
+
+<div class="clear-fix"></div>
+
 <mat-paginator [length]="dealsStorage.countDeals"
                [pageSize]="dealsStorage.pageSize"
                (page)="pageEvent = changePage($event)">
