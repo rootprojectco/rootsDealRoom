@@ -42,10 +42,11 @@ export class DealsService {
                     break;
                 }
 
-                let dealAddressContract = await this.getDealRoomContractByAddress(dealAddress);
-
-                let dealModel = new DealRoom(dealAddress, dealAddressContract);
-                this.updateDealModel(dealAddress, dealModel);
+                if (!this.deals[dealAddress]) {
+                    let dealAddressContract = await this.getDealRoomContractByAddress(dealAddress);
+                    let dealModel = new DealRoom(dealAddress, dealAddressContract);
+                    this.updateDealModel(dealAddress, dealModel);
+                }
 
                 this.getDealRoomByAddress(dealAddress).then((item) => {
                     this.updateDealModel(dealAddress, item);
@@ -120,8 +121,6 @@ export class DealsService {
             dealRoom.highestBid = this.web3Service.web3.utils.fromWei((await DealRoomContract.highestBid()).valueOf(), 'ether');
             dealRoom.ended = await DealRoomContract.ended();
             dealRoom.loaded = true;
-
-            console.log("NEW dealRoom", dealRoom);
 
             return dealRoom;
         } catch (error) {

@@ -13,6 +13,10 @@ export class DealsStorageService {
     countDeals = 0;
     pageSize = 3;
 
+    issetNew = false;
+
+    private checkNewInterval = undefined;
+
     constructor(
         private dealsService: DealsService
     ) {
@@ -20,10 +24,13 @@ export class DealsStorageService {
     }
 
     async getDealsForPage() {
+        console.log("getDealsForPage", this.currentPageIndex);
         this.dealRooms = this.dealsByPages[this.currentPageIndex];
         if (this.countDeals == 0) {
+            this.issetNew = false;
             this.countDeals = await this.dealsService.getNumDeals();
         }
+        this.setCurrentCountDealInterval();
 
         let from = this.countDeals - (this.currentPageIndex + 1) * this.pageSize;
         let to = this.countDeals - 1 - (this.currentPageIndex) * this.pageSize;
@@ -45,5 +52,21 @@ export class DealsStorageService {
             }
         }
         this.dealRooms = this.dealsByPages[this.currentPageIndex];
+    }
+
+    async checkCurrentCountDeals() {
+        let currentCountDeals = await this.dealsService.getNumDeals();
+        if (currentCountDeals !== this.countDeals) {
+            this.issetNew = true;
+        }
+    }
+
+    setCurrentCountDealInterval() {
+        if (!this.checkNewInterval) {
+            this.checkNewInterval = setInterval(() => {
+                this.checkCurrentCountDeals();
+            }, 3000);
+        }
+        this.checkCurrentCountDeals();
     }
 }

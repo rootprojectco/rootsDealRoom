@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
     MatButtonModule,
-    MatCardModule, MatDatepickerModule, MatFormFieldControl,
+    MatCardModule, MatDatepickerModule, MatDialogModule, MatFormFieldControl,
     MatFormFieldModule, MatIconModule,
     MatInputModule, MatNativeDateModule, MatPaginatorModule,
     MatProgressSpinnerModule,
@@ -23,6 +23,7 @@ import { CreateComponent } from './create/create.component';
 import {Web3Service} from "./util/web3.service";
 import { QRCodeModule } from 'angularx-qrcode';
 import {NgxMaterialTimepickerModule} from "ngx-material-timepicker";
+import {BidDialogComponent} from "./deal-room-details/bid-dialog.component";
 
 @NgModule({
     declarations: [
@@ -30,6 +31,7 @@ import {NgxMaterialTimepickerModule} from "ngx-material-timepicker";
         ListComponent,
         DealRoomCardComponent,
         DealRoomDetailsComponent,
+        BidDialogComponent,
         CreateComponent
     ],
     imports: [
@@ -41,6 +43,7 @@ import {NgxMaterialTimepickerModule} from "ngx-material-timepicker";
         MatFormFieldModule,
         MatInputModule,
         MatToolbarModule,
+        MatDialogModule,
         BrowserModule,
         AppRoutingModule,
         FormsModule,

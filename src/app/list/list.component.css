@@ -14,4 +14,12 @@ mat-paginator {
   margin: 10vh auto;
   display: block;
 }
+.new-deals-button-block {
+  width: 100%;
+  margin: 10px 0;
+  text-align: center;
+}
+.new-deals-button-block button {
+  width: 70%;
+}
 /*# sourceMappingURL=list.component.css.map */

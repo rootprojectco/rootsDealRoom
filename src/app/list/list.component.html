@@ -1,3 +1,7 @@
+<div class="new-deals-button-block">
+    <button mat-raised-button *ngIf="dealsStorage.issetNew">Update list (there are new deal rooms)</button>
+</div>
+
 <app-deal-room-card *ngFor="let dealRoom of dealsStorage.dealRooms" [dealRoom]="dealRoom"></app-deal-room-card>
 
 <div class="loading-block" *ngIf="loading">
@@ -9,5 +13,7 @@
 
 <mat-paginator [length]="dealsStorage.countDeals"
                [pageSize]="dealsStorage.pageSize"
-               (page)="pageEvent = changePage($event)">
+               [pageIndex]="dealsStorage.currentPageIndex"
+               (page)="pageEvent = changePage($event)"
+               #paginator>
 </mat-paginator>
