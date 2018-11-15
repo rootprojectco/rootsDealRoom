@@ -1,22 +1,53 @@
-<mat-card class="deal-card" *ngIf="dealRoom">
-    <mat-card-header>
-        <mat-card-title>{{dealRoom.balance}} ETH</mat-card-title>
-        <mat-card-subtitle>{{ dealRoom.address }}</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-        <qrcode [qrdata]="dealRoom.address" [size]="350" [level]="'M'"></qrcode>
-        <p>
-            Highest bid: {{ dealRoom.highestBid }} ROOTS
-        </p>
-        <p *ngIf="dealRoom.highestBidder != '0x0000000000000000000000000000000000000000'">
-            Highest bidder: {{ dealRoom.highestBidder }}
-        </p>
-        <button mat-raised-button (click)="openBidDialog()">Increase</button>
-        <p>
-            End date: {{ dealRoom.dealEndTime | date: 'yyyy-MM-dd hh:mm:ss' }}
-        </p>
-        <p>
-            Beneficiary: {{ dealRoom.beneficiary }}
-        </p>
-    </mat-card-content>
-</mat-card>
+<div class="app-deal-room-details">
+    <div class="content-box main-content" fxflex="100" fxflex.gt-md="65" fxflex.gt-sm="50" fxlayout="column">
+        <div class="main-box general" fxlayout="column">
+            <header class="accent">
+                <div class="title">General Information</div>
+            </header>
+            <div class="content">
+                <div class="info-line">
+                    <div class="title">Deal room address:</div>
+                    <div class="info">{{ dealRoom.address }}</div>
+                </div>
+                <div class="info-line">
+                    <div class="title">Balance</div>
+                    <div class="info">{{dealRoom.balance}} ETH</div>
+                </div>
+                <div class="info-line">
+                    <div class="title">Highest bid</div>
+                    <div class="info">{{ dealRoom.highestBid }} ROOTS</div>
+                </div>
+                <div class="info-line" *ngIf="dealRoom.highestBidder != '0x0000000000000000000000000000000000000000'">
+                    <div class="title">Highest bidder</div>
+                    <div class="info">{{ dealRoom.highestBidder }}</div>
+                </div>
+                <div class="info-line">
+                    <div class="title">End date</div>
+                    <div class="info">{{ dealRoom.dealEndTime | date: 'yyyy-MM-dd hh:mm:ss' }}</div>
+                </div>
+                <div class="info-line">
+                    <div class="title">Beneficiary</div>
+                    <div class="info">{{ dealRoom.beneficiary }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content-box right-content" fxflex="100" fxflex.gt-md="35" fxflex.gt-sm="50" fxlayout="column">
+        <div class="main-box actions" fxlayout="column">
+            <header class="accent" fxlayout="row" fxlayoutalign="space-between center">
+                <div class="title">Actions</div>
+            </header>
+            <div class="content" fxlayout="row wrap">
+                <div class="button-block">
+                    <button mat-raised-button color="primary" (click)="openBidDialog()">Increase bid</button>
+                </div>
+                <div class="button-block">
+                    <button mat-raised-button color="primary" (click)="openBidDialog()">End deal</button>
+                </div>
+                <div class="button-block">
+                    <button mat-raised-button color="primary" (click)="openBidDialog()">Withdraw</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

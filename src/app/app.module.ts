@@ -23,7 +23,7 @@ import { CreateComponent } from './create/create.component';
 import {Web3Service} from "./util/web3.service";
 import { QRCodeModule } from 'angularx-qrcode';
 import {NgxMaterialTimepickerModule} from "ngx-material-timepicker";
-import {BidDialogComponent} from "./deal-room-details/bid-dialog.component";
+import {BidDialogComponent} from './deal-room-details/bid-dialog.component';
 
 @NgModule({
     declarations: [
@@ -56,6 +56,9 @@ import {BidDialogComponent} from "./deal-room-details/bid-dialog.component";
         NgxMaterialTimepickerModule.forRoot(),
     ],
     providers: [Web3Service],
-    bootstrap: [AppComponent]
+    bootstrap: [AppComponent],
+    entryComponents: [
+        BidDialogComponent
+    ]
 })
 export class AppModule { }
