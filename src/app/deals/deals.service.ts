@@ -104,6 +104,15 @@ export class DealsService {
         }
     }
 
+    public async getPendingReturn(address) {
+        const self = this;
+        let pendingReturns = 0;
+        const DealRoomContract = await this.getDealRoomContractByAddress(address);
+
+        pendingReturns = this.web3Service.web3.utils.fromWei((await DealRoomContract.pendingReturns(address)).valueOf(), 'ether');
+        return pendingReturns;
+    }
+
     public createDeal(beneficiary, dateEnd, amount) {
         this.DealsRoomFactory.create(beneficiary, (dateEnd.getTime() / 1000), { from: this.web3Service.accounts[0] });
     }

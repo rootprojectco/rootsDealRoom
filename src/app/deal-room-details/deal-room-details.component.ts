@@ -5,6 +5,7 @@ import {ActivatedRoute, Router, ParamMap} from "@angular/router";
 import {DealsService} from "../deals/deals.service";
 import {MatDialog} from "@angular/material";
 import {BidDialogComponent} from "./bid-dialog.component";
+import {Web3Service} from '../util/web3.service';
 
 @Component({
     selector: 'app-deal-room-details',
@@ -14,12 +15,15 @@ import {BidDialogComponent} from "./bid-dialog.component";
 export class DealRoomDetailsComponent implements OnInit {
 
     dealRoom: DealRoom;
+    account: string;
+    pendingReturns = 0;
 
     constructor(
       private route: ActivatedRoute,
       public dialog: MatDialog,
       private router: Router,
-      private dealsService: DealsService
+      private dealsService: DealsService,
+      private web3Service: Web3Service
     ) { }
 
     ngOnInit() {
@@ -33,6 +37,11 @@ export class DealRoomDetailsComponent implements OnInit {
           self.dealRoom = dealRoom;
         });
       }
+
+      // this.account = this.web3Service.accounts[0];
+      // this.pendingReturns = this.dealsService.getPendingReturn(this.account).then((pendingR) => {
+      //     self.pendingReturns = pendingR;
+      // });
     }
 
     openBidDialog() {

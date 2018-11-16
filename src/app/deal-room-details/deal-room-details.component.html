@@ -1,6 +1,6 @@
 <div class="app-deal-room-details">
-    <div class="content-box main-content" fxflex="100" fxflex.gt-md="65" fxflex.gt-sm="50" fxlayout="column">
-        <div class="main-box general" fxlayout="column">
+    <div class="content-box main-content">
+        <div class="main-box general">
             <header class="accent">
                 <div class="title">General Information</div>
             </header>
@@ -31,13 +31,29 @@
                 </div>
             </div>
         </div>
+
+        <div class="main-box general">
+            <header class="accent">
+                <div class="title">Your participation</div>
+            </header>
+            <div class="content">
+                <div class="info-line" *ngIf="account == dealRoom.highestBid">
+                    <div class="title">You are a highest bidder. Your bid:</div>
+                    <div class="info">{{ dealRoom.highestBid }}</div>
+                </div>
+                <div class="info-line">
+                    <div class="title">Pending returns:</div>
+                    <div class="info">{{ pendingReturns }}</div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="content-box right-content" fxflex="100" fxflex.gt-md="35" fxflex.gt-sm="50" fxlayout="column">
-        <div class="main-box actions" fxlayout="column">
-            <header class="accent" fxlayout="row" fxlayoutalign="space-between center">
+    <div class="content-box right-content">
+        <div class="main-box actions">
+            <header class="accent">
                 <div class="title">Actions</div>
             </header>
-            <div class="content" fxlayout="row wrap">
+            <div class="content">
                 <div class="button-block">
                     <button mat-raised-button color="primary" (click)="openBidDialog()">Increase bid</button>
                 </div>
@@ -46,6 +62,16 @@
                 </div>
                 <div class="button-block">
                     <button mat-raised-button color="primary" (click)="openBidDialog()">Withdraw</button>
+                </div>
+            </div>
+        </div>
+        <div class="main-box actions">
+            <header class="accent">
+                <div class="title">QR code</div>
+            </header>
+            <div class="content">
+                <div class="button-block">
+                    <qrcode [qrdata]="dealRoom.address" [size]="150" [level]="'M'"></qrcode>
                 </div>
             </div>
         </div>

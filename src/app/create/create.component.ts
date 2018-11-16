@@ -32,7 +32,7 @@ export class CreateComponent implements OnInit {
       dateEnd.setMinutes(minutes);
     }
 
-    this.dealsService.createDeal(this.form.beneficiary, dateEnd, 0)
+    this.dealsService.createDeal(this.form.beneficiary, dateEnd, 0);
   }
 
 }
