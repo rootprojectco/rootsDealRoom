@@ -1,11 +1,17 @@
-<h1 mat-dialog-title>Hi {{data.name}}</h1>
-<div mat-dialog-content>
+<div mat-dialog-content *ngIf="!error">
     <p>Enter your proposal</p>
     <mat-form-field>
         <input matInput [(ngModel)]="bid">
     </mat-form-field>
 </div>
-<div mat-dialog-actions>
+<div mat-dialog-actions *ngIf="!error">
     <button mat-button (click)="onNoClick()">No Thanks</button>
-    <button mat-button [mat-dialog-close]="bid" cdkFocusInitial>Ok</button>
+    <button mat-button (click)="onYesClick()" [disabled]="(bid<1)">Ok</button>
+</div>
+<div mat-dialog-content *ngIf="error">
+    <p>Error:</p>
+    <p>{{ error}}</p>
+</div>
+<div mat-dialog-actions *ngIf="error" class="right-content">
+    <button mat-button (click)="onCloseClick()">Close</button>
 </div>

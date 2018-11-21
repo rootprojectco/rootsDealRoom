@@ -4,7 +4,7 @@
             <header class="accent">
                 <div class="title">General Information</div>
             </header>
-            <div class="content">
+            <div class="content" *ngIf="dealRoom">
                 <div class="info-line">
                     <div class="title">Deal room address:</div>
                     <div class="info">{{ dealRoom.address }}</div>
@@ -36,8 +36,8 @@
             <header class="accent">
                 <div class="title">Your participation</div>
             </header>
-            <div class="content">
-                <div class="info-line" *ngIf="account == dealRoom.highestBid">
+            <div class="content" *ngIf="dealRoom">
+                <div class="info-line" *ngIf="account == dealRoom.highestBidder">
                     <div class="title">You are a highest bidder. Your bid:</div>
                     <div class="info">{{ dealRoom.highestBid }}</div>
                 </div>
@@ -53,7 +53,7 @@
             <header class="accent">
                 <div class="title">Actions</div>
             </header>
-            <div class="content">
+            <div class="content" *ngIf="dealRoom">
                 <div class="button-block">
                     <button mat-raised-button color="primary" (click)="openBidDialog()">Increase bid</button>
                 </div>
@@ -65,7 +65,7 @@
                 </div>
             </div>
         </div>
-        <div class="main-box actions">
+        <div class="main-box actions" *ngIf="dealRoom">
             <header class="accent">
                 <div class="title">QR code</div>
             </header>

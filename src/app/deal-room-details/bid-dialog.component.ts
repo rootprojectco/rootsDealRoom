@@ -1,6 +1,7 @@
 import {Component, Inject} from '@angular/core';
 import {DealRoom} from '../deal-room';
 import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
+import {TokenService} from "../deals/token.service";
 
 @Component({
     selector: 'app-bid-dialog',
@@ -8,14 +9,30 @@ import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
 })
 export class BidDialogComponent {
 
-    bid: string;
+    bid: string = '';
+    error: string;
 
     constructor(
+        private tokenService: TokenService,
         public dialogRef: MatDialogRef<BidDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public data: {dealRoom: DealRoom}
     ) {}
 
     onNoClick(): void {
+        this.dialogRef.close();
+    }
+
+    async onYesClick(): void {
+        console.log("TEST", this.bid, (this.bid < 0));
+        this.tokenService.send(this.data.dealRoom.address, this.bid).then((value) => {
+            console.log("OK", value);
+        }, (error) => {
+            console.log("ERROR", error);
+            this.error = error.message;
+        });
+    }
+
+    onCloseClick(): void {
         this.dialogRef.close();
     }
 }
