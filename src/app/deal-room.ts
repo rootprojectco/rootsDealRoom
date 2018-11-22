@@ -26,4 +26,9 @@ export class DealRoom {
     this.ended = params.ended;
     this.loaded = params.loaded;
   }
+
+    isDateTimeEnd() {
+        let currentDateTime = new Date();
+        return this.dealEndTime < currentDateTime;
+    }
 }

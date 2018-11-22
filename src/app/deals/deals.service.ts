@@ -104,10 +104,10 @@ export class DealsService {
         }
     }
 
-    public async getPendingReturn(address) {
+    public async getPendingReturn(addressDealRoom, address) {
         const self = this;
         let pendingReturns = 0;
-        const DealRoomContract = await this.getDealRoomContractByAddress(address);
+        const DealRoomContract = await this.getDealRoomContractByAddress(addressDealRoom);
 
         pendingReturns = this.web3Service.web3.utils.fromWei((await DealRoomContract.pendingReturns(address)).valueOf(), 'ether');
         return pendingReturns;
@@ -143,6 +143,34 @@ export class DealsService {
         let DealRoomContract = await DealRoomAbstractContract.at(address);
 
         return DealRoomContract;
+    }
+
+    public async dealEnd(dealRoom: DealRoom) {
+        const self = this;
+        const DealRoomContract = await this.getDealRoomContractByAddress(dealRoom.address);
+
+        try {
+            await DealRoomContract.dealEnd({from: this.web3Service.accounts[0]});
+
+            return true;
+        } catch (e) {
+            console.log(e);
+            throw e;
+        }
+    }
+
+    public async withdraw(dealRoom: DealRoom) {
+        const self = this;
+        const DealRoomContract = await this.getDealRoomContractByAddress(dealRoom.address);
+
+        try {
+            await DealRoomContract.withdraw({from: this.web3Service.accounts[0]});
+
+            return true;
+        } catch (e) {
+            console.log(e);
+            throw e;
+        }
     }
 
     private getContractPromise(artifacts) {

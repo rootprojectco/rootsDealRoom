@@ -1,7 +1,7 @@
 import {Component, Inject} from '@angular/core';
-import {DealRoom} from '../deal-room';
+import {DealRoom} from './../../deal-room';
 import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
-import {TokenService} from "../deals/token.service";
+import {TokenService} from "./../../deals/token.service";
 
 @Component({
     selector: 'app-bid-dialog',

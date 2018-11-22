@@ -30,7 +30,7 @@ export class TokenService {
         await this.setToken();
 
         try {
-            await this.Token.transfer(to, value, {from: this.web3Service.accounts[0]});
+            await this.Token.transfer(to, this.web3Service.web3.utils.toWei(value, 'ether'), {from: this.web3Service.accounts[0]});
 
             return true;
 

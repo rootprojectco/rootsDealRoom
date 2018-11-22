@@ -1,0 +1,14 @@
+<div mat-dialog-content *ngIf="!error">
+    <p>Do you want to withdraw all your bids from this Deal?</p>
+</div>
+<div mat-dialog-actions *ngIf="!error">
+    <button mat-button (click)="onNoClick()">No</button>
+    <button mat-button (click)="onYesClick()">Yes</button>
+</div>
+<div mat-dialog-content *ngIf="error">
+    <p>Error:</p>
+    <p>{{ error}}</p>
+</div>
+<div mat-dialog-actions *ngIf="error" class="right-content">
+    <button mat-button (click)="onCloseClick()">Close</button>
+</div>

@@ -55,13 +55,13 @@
             </header>
             <div class="content" *ngIf="dealRoom">
                 <div class="button-block">
-                    <button mat-raised-button color="primary" (click)="openBidDialog()">Increase bid</button>
+                    <button mat-raised-button color="primary" (click)="openBidDialog()" [disabled]="dealRoom.ended || dealRoom.isDateTimeEnd()">Increase bid</button>
                 </div>
                 <div class="button-block">
-                    <button mat-raised-button color="primary" (click)="openBidDialog()">End deal</button>
+                    <button mat-raised-button color="primary" (click)="openEndDealDialog()" [disabled]="!dealRoom.ended && !dealRoom.isDateTimeEnd()">End deal</button>
                 </div>
                 <div class="button-block">
-                    <button mat-raised-button color="primary" (click)="openBidDialog()">Withdraw</button>
+                    <button mat-raised-button color="primary" (click)="openWithdrawDialog()" [disabled]="pendingReturns == 0">Withdraw</button>
                 </div>
             </div>
         </div>
