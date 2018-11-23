@@ -9,11 +9,14 @@
         <p>
             Highest bid: {{ dealRoom.highestBid }} ROOTS
         </p>
-        <p *ngIf="!dealRoom.ended">
+        <p *ngIf="!dealRoom.ended && dealRoom.isDateTimeEnd()">
+            Expired
+        </p>
+        <p *ngIf="!dealRoom.ended && !dealRoom.isDateTimeEnd()">
             End date: {{ dealRoom.dealEndTime | date: 'yyyy-MM-dd HH:mm:ss' }}
         </p>
         <p *ngIf="dealRoom.ended">
-            Finished
+            Closed
         </p>
     </mat-card-content>
 

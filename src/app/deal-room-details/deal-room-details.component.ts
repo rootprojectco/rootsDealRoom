@@ -40,9 +40,9 @@ export class DealRoomDetailsComponent implements OnInit {
         });
       }
 
-        const myObserver = {
-            next: x => {
-                self.account = x[0];
+        const accountObserver = {
+            next: accounts => {
+                self.account = accounts[0];
                 self.dealsService.getPendingReturn(routeParams.address, self.account).then((pendingR) => {
                     self.pendingReturns = pendingR;
                 });
@@ -55,12 +55,7 @@ export class DealRoomDetailsComponent implements OnInit {
                 },
         };
 
-      this.web3Service.accountsObservable._subscribe(myObserver);
-
-      // this.account = this.web3Service.accounts[0];
-      // this.pendingReturns = this.dealsService.getPendingReturn(this.account).then((pendingR) => {
-      //     self.pendingReturns = pendingR;
-      // });
+      this.web3Service.accountsObservable._subscribe(accountObserver);
     }
 
     openBidDialog() {
@@ -69,9 +64,7 @@ export class DealRoomDetailsComponent implements OnInit {
             data: {dealRoom: this.dealRoom}
         });
 
-        dialogRef.afterClosed().subscribe(result => {
-            console.log('The dialog was closed', result);
-        });
+        dialogRef.afterClosed().subscribe(this.proccessAfterDialogClose.bind(this));
     }
 
     openEndDealDialog() {
@@ -80,9 +73,7 @@ export class DealRoomDetailsComponent implements OnInit {
             data: {dealRoom: this.dealRoom}
         });
 
-        dialogRef.afterClosed().subscribe(result => {
-            console.log('The dialog was closed', result);
-        });
+        dialogRef.afterClosed().subscribe(this.proccessAfterDialogClose.bind(this));
     }
 
     openWithdrawDialog() {
@@ -91,13 +82,32 @@ export class DealRoomDetailsComponent implements OnInit {
             data: {dealRoom: this.dealRoom}
         });
 
-        dialogRef.afterClosed().subscribe(result => {
-            console.log('The dialog was closed', result);
-        });
+        dialogRef.afterClosed().subscribe(this.proccessAfterDialogClose.bind(this));
+    }
+
+    proccessAfterDialogClose(result) {
+        let self = this;
+        console.log('The dialog was closed', result);
+
+        if (result == 'update') {
+            this.dealsService.getDeal(this.dealRoom.address).then((dealRoom: DealRoom) => {
+                self.dealRoom = dealRoom;
+            });
+        }
     }
 
     isDateTimeEnd(dateTime) {
         let currentDateTime = new Date();
         return dateTime < currentDateTime;
+    }
+
+    update() {
+        let self = this;
+        const routeParams = this.route.snapshot.params;
+        if (routeParams.address) {
+            this.dealsService.getDeal(routeParams.address).then((dealRoom: DealRoom) => {
+                self.dealRoom = dealRoom;
+            });
+        }
     }
 }

@@ -26,6 +26,9 @@ export class BidDialogComponent {
         console.log("TEST", this.bid, (this.bid < 0));
         this.tokenService.send(this.data.dealRoom.address, this.bid).then((value) => {
             console.log("OK", value);
+            if (value) {
+                this.dialogRef.close('update');
+            }
         }, (error) => {
             console.log("ERROR", error);
             this.error = error.message;

@@ -24,8 +24,11 @@ export class WithdrawDialogComponent {
     }
 
     async onYesClick(): void {
-        this.dealService.dealEnd(this.data.dealRoom).then((value) => {
+        this.dealService.withdraw(this.data.dealRoom).then((value) => {
             console.log("OK", value);
+            if (value) {
+                this.dialogRef.close('update');
+            }
         }, (error) => {
             console.log("ERROR", error);
             this.error = error.message;

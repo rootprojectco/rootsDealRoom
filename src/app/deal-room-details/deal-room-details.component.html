@@ -3,8 +3,12 @@
         <div class="main-box general">
             <header class="accent">
                 <div class="title">General Information</div>
+                <button class="right-content" mat-raised-button color="primary" (click)="update()">update</button>
             </header>
-            <div class="content" *ngIf="dealRoom">
+            <div class="content" *ngIf="dealRoom && dealRoom.dealEndTime">
+                <div class="info-line" *ngIf="dealRoom.ended">
+                    <div class="title">Deal room closed!</div>
+                </div>
                 <div class="info-line">
                     <div class="title">Deal room address:</div>
                     <div class="info">{{ dealRoom.address }}</div>
@@ -30,20 +34,24 @@
                     <div class="info">{{ dealRoom.beneficiary }}</div>
                 </div>
             </div>
+
+            <div class="content" *ngIf="dealRoom && !dealRoom.dealEndTime">
+                <mat-spinner style="margin: 0 auto;"></mat-spinner>
+            </div>
         </div>
 
-        <div class="main-box general">
+        <div class="main-box general" *ngIf="dealRoom && dealRoom.dealEndTime">
             <header class="accent">
                 <div class="title">Your participation</div>
             </header>
-            <div class="content" *ngIf="dealRoom">
+            <div class="content">
                 <div class="info-line" *ngIf="account == dealRoom.highestBidder">
                     <div class="title">You are a highest bidder. Your bid:</div>
                     <div class="info">{{ dealRoom.highestBid }}</div>
                 </div>
                 <div class="info-line">
                     <div class="title">Pending returns:</div>
-                    <div class="info">{{ pendingReturns }}</div>
+                    <div class="info">{{ pendingReturns }} ROOTS</div>
                 </div>
             </div>
         </div>
@@ -58,7 +66,7 @@
                     <button mat-raised-button color="primary" (click)="openBidDialog()" [disabled]="dealRoom.ended || dealRoom.isDateTimeEnd()">Increase bid</button>
                 </div>
                 <div class="button-block">
-                    <button mat-raised-button color="primary" (click)="openEndDealDialog()" [disabled]="!dealRoom.ended && !dealRoom.isDateTimeEnd()">End deal</button>
+                    <button mat-raised-button color="primary" (click)="openEndDealDialog()" [disabled]="dealRoom.ended || !dealRoom.isDateTimeEnd()">Close deal</button>
                 </div>
                 <div class="button-block">
                     <button mat-raised-button color="primary" (click)="openWithdrawDialog()" [disabled]="pendingReturns == 0">Withdraw</button>
