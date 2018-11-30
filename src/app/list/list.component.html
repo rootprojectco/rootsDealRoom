@@ -1,5 +1,5 @@
 <div class="new-deals-button-block">
-    <button mat-raised-button *ngIf="dealsStorage.issetNew">Update list (there are new deal rooms)</button>
+    <button mat-raised-button *ngIf="dealsStorage.issetNew" (click)="updateList()">Update list (there are new deal rooms)</button>
 </div>
 
 <app-deal-room-card *ngFor="let dealRoom of dealsStorage.dealRooms" [dealRoom]="dealRoom"></app-deal-room-card>

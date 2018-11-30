@@ -34,4 +34,14 @@ export class ListComponent implements OnInit {
         await this.dealsStorage.getDealsForPage();
         this.loading = false;
     }
+
+    public async updateList() {
+        this.loading = true;
+        this.dealsStorage.countDeals = 0;
+        this.dealsStorage.currentPageIndex = 0;
+        this.dealsStorage.dealRooms.length = 0;
+        this.dealsStorage.dealsByPages.length = 0;
+        await this.dealsStorage.getDealsForPage();
+        this.loading = false;
+    }
 }
