@@ -5,7 +5,7 @@ const truffleAssert = require('truffle-assertions');
 
 contract('RootsDealRoom test', async (accounts) => {
 
-    let DEAL_ROOM_OPEN_IN_SECONDS = 10;
+    let DEAL_ROOM_OPEN_IN_SECONDS = 3;
 
     let owner = accounts[0];
     let beneficiary = accounts[1];
@@ -15,8 +15,6 @@ contract('RootsDealRoom test', async (accounts) => {
     let tokenInstance;
     let dealRoomInstance;
 
-    let dateCloseDealRoom = Date.now()/1000 + DEAL_ROOM_OPEN_IN_SECONDS;
-
     before(async () => {
         tokenInstance = await RootsToken.new.apply(this);
         await tokenInstance.mint(account1, 1000);
@@ -25,6 +23,7 @@ contract('RootsDealRoom test', async (accounts) => {
     });
 
     it("should create deal for " + DEAL_ROOM_OPEN_IN_SECONDS + " seconds", async () => {
+        let dateCloseDealRoom = Date.now()/1000 + DEAL_ROOM_OPEN_IN_SECONDS;
         let deployParams = [
             beneficiary,
             tokenInstance.address,
@@ -359,5 +358,71 @@ contract('RootsDealRoom test', async (accounts) => {
 
         let _pendingReturnsAccount3 = await dealRoomInstance.pendingReturns(account3);
         assert.equal(_pendingReturnsAccount3.valueOf(), 0);
+    });
+
+    it("should create another deal for " + DEAL_ROOM_OPEN_IN_SECONDS + " seconds", async () => {
+        let dateCloseDealRoom = Date.now()/1000 + DEAL_ROOM_OPEN_IN_SECONDS;
+        let deployParams = [
+            beneficiary,
+            tokenInstance.address,
+            dateCloseDealRoom
+        ];
+        dealRoomInstance = await RootsDealRoom.new.apply(this, deployParams, {value: 1});
+
+        let _balance = await dealRoomInstance.balance();
+        let _highestBidder = await dealRoomInstance.highestBidder();
+        let _highestBid = await dealRoomInstance.highestBid();
+
+        assert.equal(_balance.valueOf(), 0);
+        assert.equal(_highestBidder.valueOf(), 0);
+        assert.equal(_highestBid.valueOf(), 0);
+    });
+
+    it("should load ether to DealRoom", async () => {
+
+        let tx = await dealRoomInstance.sendTransaction({
+            from: account1,
+            value: web3.toWei('3', 'ether'),
+        });
+
+        truffleAssert.eventEmitted(tx, 'LoadEther', (ev) => {
+            return ev.loader == account1 && ev.amount.valueOf() == web3.toWei('3', 'ether');
+        });
+
+        let _balance = await dealRoomInstance.balance();
+
+        assert.equal(_balance.valueOf(), web3.toWei('3', 'ether'));
+    });
+
+    it("should end deal after " + DEAL_ROOM_OPEN_IN_SECONDS + " seconds without bids", async () => {
+        let etherBalanceOwnerBefore = web3.eth.getBalance(owner);
+
+        await new Promise(resolve => setTimeout(resolve, DEAL_ROOM_OPEN_IN_SECONDS*1000));
+
+        await dealRoomInstance.dealEnd({from: account1});
+
+        let _balanceOwner = await tokenInstance.balanceOf(owner);
+        assert.equal(_balanceOwner.valueOf(), 0);
+
+        let _balanceBeneficiary = await tokenInstance.balanceOf(beneficiary);
+        assert.equal(_balanceBeneficiary.valueOf(), 300);
+
+        let etherBalanceOwner = web3.eth.getBalance(owner);
+        assert.equal(etherBalanceOwner.valueOf() - etherBalanceOwnerBefore.valueOf(), web3.toWei('3', 'ether'));
+
+        let _balanceDealRoom = await tokenInstance.balanceOf(dealRoomInstance.address);
+        assert.equal(_balanceDealRoom.valueOf(), 0);
+
+        let _balanceEtherDealRoom = web3.eth.getBalance(dealRoomInstance.address);
+        assert.equal(_balanceEtherDealRoom.valueOf(), 0);
+
+        let _highestBidder = await dealRoomInstance.highestBidder();
+        assert.equal(_highestBidder.valueOf(), 0);
+
+        let _highestBid = await dealRoomInstance.highestBid();
+        assert.equal(_highestBid.valueOf(), 0);
+
+        let _ended = await dealRoomInstance.ended();
+        assert.equal(_ended.valueOf(), true);
     });
 });
