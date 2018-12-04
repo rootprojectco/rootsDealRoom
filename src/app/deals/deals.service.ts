@@ -104,6 +104,24 @@ export class DealsService {
         }
     }
 
+    public async reloadDealRoom(address) {
+        const self = this;
+        try {
+            const dealAddressContract = await this.getDealRoomContractByAddress(address);
+
+            const dealModel = new DealRoom(address, dealAddressContract);
+            this.updateDealModel(address, dealModel);
+
+            this.getDealRoomByAddress(address).then((item) => {
+                this.updateDealModel(address, item);
+            });
+
+            return this.deals[address];
+        } catch (e) {
+            throw {error: 'do not found deal room by address - ' + address};
+        }
+    }
+
     public async getPendingReturn(addressDealRoom, address) {
         const self = this;
         let pendingReturns = 0;

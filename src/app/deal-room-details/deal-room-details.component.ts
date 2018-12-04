@@ -105,8 +105,9 @@ export class DealRoomDetailsComponent implements OnInit {
         let self = this;
         const routeParams = this.route.snapshot.params;
         if (routeParams.address) {
-            this.dealsService.getDeal(routeParams.address).then((dealRoom: DealRoom) => {
-                self.dealRoom = dealRoom;
+            self.dealRoom.dealEndTime = undefined;
+            this.dealsService.reloadDealRoom(routeParams.address).then(async (dealRoom: DealRoom) => {
+                await self.dealRoom = dealRoom;
             });
         }
     }
