@@ -290,11 +290,16 @@ contract RootsDealRoom is Ownable {
         ended = true;
         emit DealEnded(highestBidder, highestBid);
 
-        //transfer ETH to highestBidder
-        highestBidder.transfer(balance);
+        if (highestBid > 0) {
+            //transfer ETH to highestBidder
+            highestBidder.transfer(balance);
 
-        //transfer highestBid tokens to beneficiary
-        ERC20(tokenAddress).transfer(beneficiary, highestBid);
+            //transfer highestBid tokens to beneficiary
+            ERC20(tokenAddress).transfer(beneficiary, highestBid);
+        } else {
+            //return ETH to owner
+            owner.transfer(balance);
+        }
     }
 
     /**
