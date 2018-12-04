@@ -1,23 +1,29 @@
-<form class="create-form">
-  <div class="form-element">
-    <mat-form-field>
-      <input matInput placeholder="Beneficiary address" [(ngModel)]="form.beneficiary" name="beneficiary">
-    </mat-form-field>
-  </div>
-  <div class="form-element">
-    <mat-form-field>
-      <input matInput [matDatepicker]="picker" placeholder="Choose end date" [(ngModel)]="form.dateEnd" name="dateEnd">
-      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-      <mat-datepicker #picker></mat-datepicker>
-    </mat-form-field>
-  </div>
-  <div class="form-element">
-    <input placeholder="Choose end time" aria-label="Choose end time" [ngxTimepicker]="fullTime" [format]="24" readonly [(ngModel)]="form.timeEnd" name="timeEnd" class="choose_time">
-    <ngx-material-timepicker #fullTime></ngx-material-timepicker>
-  </div>
+<form class="create-form" *ngIf="!waiting">
+    <div class="form-element">
+        <p *ngIf="error" class="mat-error">{{ error }}</p>
+        <mat-form-field>
+            <input matInput placeholder="Beneficiary address" [(ngModel)]="form.beneficiary" name="beneficiary">
+        </mat-form-field>
+    </div>
+    <div class="form-element">
+        <mat-form-field>
+            <input matInput [matDatepicker]="picker" placeholder="Choose end date" [(ngModel)]="form.dateEnd" name="dateEnd">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+    </div>
+    <div class="form-element">
+        <input placeholder="Choose end time" aria-label="Choose end time" [ngxTimepicker]="fullTime" [format]="24" readonly [(ngModel)]="form.timeEnd" name="timeEnd" class="choose_time">
+        <ngx-material-timepicker #fullTime></ngx-material-timepicker>
+    </div>
 
-  <div class="form-element">
-    <button mat-raised-button color="primary" (click)="create()">Create</button>
-  </div>
+    <div class="form-element">
+        <button mat-raised-button color="primary" (click)="create()">Create</button>
+    </div>
 
 </form>
+
+<div *ngIf="waiting">
+    <p>Waiting for transaction confirmation.</p>
+    <mat-spinner></mat-spinner>
+</div>

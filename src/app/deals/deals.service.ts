@@ -132,7 +132,7 @@ export class DealsService {
     }
 
     public createDeal(beneficiary, dateEnd, amount) {
-        this.DealsRoomFactory.create(beneficiary, (dateEnd.getTime() / 1000), { from: this.web3Service.accounts[0] });
+        return this.DealsRoomFactory.create(beneficiary, (dateEnd.getTime() / 1000), { from: this.web3Service.accounts[0] });
     }
 
     private async getDealRoomByAddress(address) {
