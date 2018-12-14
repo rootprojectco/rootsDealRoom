@@ -11,7 +11,8 @@ export class CreateComponent implements OnInit {
     form: any = {
         beneficiary: '',
         dateEnd: '',
-        timeEnd: ''
+        timeEnd: '',
+        amount: ''
     };
 
     waiting = false;
@@ -22,6 +23,7 @@ export class CreateComponent implements OnInit {
     ) { }
 
     ngOnInit() {
+        console.log('CREATE init');
     }
 
     async create() {
@@ -37,7 +39,8 @@ export class CreateComponent implements OnInit {
         }
 
         self.waiting = true;
-        this.dealsService.createDeal(this.form.beneficiary, dateEnd).then((res) => {
+        this.dealsService.createDeal(this.form.beneficiary, dateEnd, this.form.amount).then((res) => {
+            console.log('CREATE', res);
             self.waiting = false;
         }).catch((error) => {
             self.waiting = false;

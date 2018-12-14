@@ -18,6 +18,12 @@
     </div>
 
     <div class="form-element">
+        <mat-form-field>
+            <input matInput placeholder="Amount Ether" [(ngModel)]="form.amount" name="amount">
+        </mat-form-field>
+    </div>
+
+    <div class="form-element">
         <button mat-raised-button color="primary" (click)="create()">Create</button>
     </div>
 

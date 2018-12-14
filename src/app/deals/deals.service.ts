@@ -124,8 +124,18 @@ export class DealsService {
         return this.web3Service.web3.utils.fromWei((await DealRoomContract.pendingReturns(address)).valueOf(), 'ether');
     }
 
-    public createDeal(beneficiary, dateEnd) {
-        return this.DealsRoomFactory.create(beneficiary, (dateEnd.getTime() / 1000), { from: this.web3Service.accounts[0] });
+    public createDeal(beneficiary, dateEnd, amountEther) {
+        let amountWei = 0;
+        amountEther = amountEther.replace(',', '.');
+        if (parseFloat(amountEther) > 0) {
+            amountWei = this.web3Service.web3.utils.toWei(amountEther);
+        }
+
+        return this.DealsRoomFactory.create(
+            beneficiary,
+            (dateEnd.getTime() / 1000),
+            { from: this.web3Service.accounts[0], value: amountWei }
+            );
     }
 
     private async getDealRoomByAddress(address) {
