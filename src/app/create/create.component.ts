@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {DealsService} from '../deals/deals.service';
+import {Router} from "@angular/router";
 
 @Component({
     selector: 'app-create',
@@ -19,7 +20,8 @@ export class CreateComponent implements OnInit {
     error = '';
 
     constructor(
-        protected dealsService: DealsService
+        protected dealsService: DealsService,
+        private router: Router
     ) { }
 
     ngOnInit() {
@@ -41,11 +43,35 @@ export class CreateComponent implements OnInit {
         self.waiting = true;
         this.dealsService.createDeal(this.form.beneficiary, dateEnd, this.form.amount).then((res) => {
             console.log('CREATE', res);
-            self.waiting = false;
+
+            const dealRoomAddress = self.getdealRoomFromLogs(res);
+            if (dealRoomAddress) {
+                this.router.navigate(['/address/' + dealRoomAddress]);
+            } else {
+                this.router.navigate(['/']);
+            }
         }).catch((error) => {
             self.waiting = false;
             self.error = error.message;
         });
+    }
+
+    private getdealRoomFromLogs(res) {
+        if (res && res.logs) {
+            let dealRoom = false;
+            for (const i in res.logs) {
+                if (
+                    res.logs[i] && res.logs[i].hasOwnProperty('event') && res.logs[i]['event'] === 'DealRoomCreated' &&
+                    res.logs[i].hasOwnProperty('args') && res.logs[i]['args'].hasOwnProperty('dealRoom')
+                ) {
+                    dealRoom = res.logs[i]['args']['dealRoom'];
+                }
+            }
+
+            return dealRoom;
+        } else {
+            return false;
+        }
     }
 
 }

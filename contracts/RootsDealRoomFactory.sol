@@ -36,6 +36,9 @@ contract RootsDealRoomFactory is Ownable {
     function numDeals() public view returns (uint256)
     { return dealsAddr.length; }
 
+    // Events that will be emitted on changes.
+    event DealRoomCreated(address dealRoom);
+
     // ---====== CONSTRUCTOR ======---
 
     constructor(address _rootsToken) public {
@@ -56,6 +59,8 @@ contract RootsDealRoomFactory is Ownable {
         deals[newContract].beneficiary = _beneficiary;
         deals[newContract].dealEndTime = _dealEndTime;
         deals[newContract].index = dealsAddr.push(newContract) - 1;
+
+        emit DealRoomCreated(newContract);
 
         return newContract;
     }
