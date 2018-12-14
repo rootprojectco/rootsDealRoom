@@ -1,13 +1,12 @@
-import { switchMap } from 'rxjs/operators';
 import { Component, OnInit } from '@angular/core';
-import {DealRoom} from "../deal-room";
-import {ActivatedRoute, Router, ParamMap} from "@angular/router";
-import {DealsService} from "../deals/deals.service";
-import {MatDialog} from "@angular/material";
-import {BidDialogComponent} from "./dialogs/bid-dialog.component";
+import {DealRoom} from '../deal-room';
+import {ActivatedRoute, Router} from '@angular/router';
+import {DealsService} from '../deals/deals.service';
+import {MatDialog} from '@angular/material';
+import {BidDialogComponent} from './dialogs/bid-dialog.component';
 import {Web3Service} from '../util/web3.service';
-import {EndDealDialogComponent} from "./dialogs/end-deal-dialog.component";
-import {WithdrawDialogComponent} from "./dialogs/withdraw-dialog.component";
+import {EndDealDialogComponent} from './dialogs/end-deal-dialog.component';
+import {WithdrawDialogComponent} from './dialogs/withdraw-dialog.component';
 
 @Component({
     selector: 'app-deal-room-details',
@@ -30,8 +29,8 @@ export class DealRoomDetailsComponent implements OnInit {
 
     ngOnInit() {
 
-      let self = this;
-      const queryParams = this.route.snapshot.queryParams;
+      const self = this;
+
       const routeParams = this.route.snapshot.params;
 
       if (routeParams.address) {
@@ -40,6 +39,7 @@ export class DealRoomDetailsComponent implements OnInit {
         });
       }
 
+        // noinspection JSUnusedGlobalSymbols
         const accountObserver = {
             next: accounts => {
                 self.account = accounts[0];
@@ -55,7 +55,7 @@ export class DealRoomDetailsComponent implements OnInit {
                 },
         };
 
-      this.web3Service.accountsObservable._subscribe(accountObserver);
+        this.web3Service.accountsObservable.subscribe(accountObserver);
     }
 
     openBidDialog() {
@@ -86,28 +86,23 @@ export class DealRoomDetailsComponent implements OnInit {
     }
 
     proccessAfterDialogClose(result) {
-        let self = this;
+        const self = this;
         console.log('The dialog was closed', result);
 
-        if (result == 'update') {
+        if (result === 'update') {
             this.dealsService.getDeal(this.dealRoom.address).then((dealRoom: DealRoom) => {
                 self.dealRoom = dealRoom;
             });
         }
     }
 
-    isDateTimeEnd(dateTime) {
-        let currentDateTime = new Date();
-        return dateTime < currentDateTime;
-    }
-
     update() {
-        let self = this;
+        const self = this;
         const routeParams = this.route.snapshot.params;
         if (routeParams.address) {
             self.dealRoom.dealEndTime = undefined;
             this.dealsService.reloadDealRoom(routeParams.address).then(async (dealRoom: DealRoom) => {
-                await self.dealRoom = dealRoom;
+                self.dealRoom = dealRoom;
             });
         }
     }

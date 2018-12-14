@@ -24,22 +24,22 @@ export class DealsStorageService {
     }
 
     async getDealsForPage() {
-        console.log("getDealsForPage", this.currentPageIndex);
+        console.log('getDealsForPage', this.currentPageIndex);
         this.dealRooms = this.dealsByPages[this.currentPageIndex];
-        if (this.countDeals == 0) {
+        if (this.countDeals === 0) {
             this.issetNew = false;
             this.countDeals = await this.dealsService.getNumDeals();
         }
         this.setCurrentCountDealInterval();
 
         let from = this.countDeals - (this.currentPageIndex + 1) * this.pageSize;
-        let to = this.countDeals - 1 - (this.currentPageIndex) * this.pageSize;
+        const to = this.countDeals - 1 - (this.currentPageIndex) * this.pageSize;
 
         if (from < 0) {
             from = 0;
         }
 
-        let dealsForPage = await this.dealsService.getDeals(from, to);
+        const dealsForPage = await this.dealsService.getDeals(from, to);
         if (this.dealsByPages[this.currentPageIndex]) {
             this.dealsByPages[this.currentPageIndex].length = 0;
         } else {
@@ -55,7 +55,7 @@ export class DealsStorageService {
     }
 
     async checkCurrentCountDeals() {
-        let currentCountDeals = await this.dealsService.getNumDeals();
+        const currentCountDeals = await this.dealsService.getNumDeals();
         if (currentCountDeals !== this.countDeals) {
             this.issetNew = true;
         }

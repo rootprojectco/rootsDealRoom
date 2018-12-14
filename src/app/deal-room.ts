@@ -28,7 +28,7 @@ export class DealRoom {
   }
 
     isDateTimeEnd() {
-        let currentDateTime = new Date();
+        const currentDateTime = new Date();
         return this.dealEndTime < currentDateTime;
     }
 }

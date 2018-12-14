@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
-import {Observable} from 'rxjs';
-import {DealRoom} from '../deal-room';
 import {Web3Service} from '../util/web3.service';
-const Web3 = require('web3');
+
 
 declare let require: any;
 const token_artifacts = require('../../../build/contracts/RootsToken.json');
@@ -41,8 +39,8 @@ export class TokenService {
     }
 
     private getContractPromise(artifacts) {
-        let self = this;
-        return new Promise(async (resolve, reject) => {
+        const self = this;
+        return new Promise(async (resolve) => {
             await self.web3Service.artifactsToContract(artifacts)
                 .then((ContractAbstraction) => {
                     resolve(ContractAbstraction);

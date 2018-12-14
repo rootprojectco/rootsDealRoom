@@ -1,6 +1,7 @@
 build
 
 configs/config.js
+sonar-project.properties
 
 # compiled output
 /dist
@@ -18,6 +19,7 @@ configs/config.js
 *.launch
 .settings/
 *.sublime-workspace
+.scannerwork
 
 # IDE - VSCode
 .vscode/*

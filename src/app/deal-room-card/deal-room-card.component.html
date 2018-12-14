@@ -1,4 +1,3 @@
-<!--<mat-card *ngIf="dealRoom" class="deal-card" routerLink="/address/{{ dealRoom.address }}">-->
 <mat-card class="deal-card" (click)="open(dealRoom)">
     <mat-card-header *ngIf="dealRoom.loaded">
         <mat-card-title>{{dealRoom.balance}} ETH</mat-card-title>

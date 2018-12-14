@@ -1,4 +1,4 @@
-var RootsDealRoomFactory = artifacts.require("./RootsDealRoomFactory.sol");
+const RootsDealRoomFactory = artifacts.require("./RootsDealRoomFactory.sol");
 
 const configs = require('./../configs/config');
 

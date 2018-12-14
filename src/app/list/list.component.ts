@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {DealRoom} from "../deal-room";
-import {DealsService} from "../deals/deals.service";
-import {PageEvent} from "@angular/material";
-import {DealsStorageService} from "../deals/deals-storage.service";
+import {PageEvent} from '@angular/material';
+import {DealsStorageService} from '../deals/deals-storage.service';
 
 @Component({
     selector: 'app-list',
@@ -12,7 +10,6 @@ import {DealsStorageService} from "../deals/deals-storage.service";
 export class ListComponent implements OnInit {
 
     constructor(
-        private dealsService: DealsService,
         public dealsStorage: DealsStorageService
     ) { }
 

@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {DealRoom} from "../deal-room";
-import {Router} from "@angular/router";
+import {DealRoom} from '../deal-room';
+import {Router} from '@angular/router';
 
 @Component({
     selector: 'app-deal-room-card',
@@ -18,8 +18,6 @@ export class DealRoomCardComponent implements OnInit {
     ngOnInit() {
 
     }
-
-
 
     open(dealRoom) {
         if (dealRoom.loaded) {

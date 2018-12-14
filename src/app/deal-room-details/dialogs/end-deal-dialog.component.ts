@@ -1,7 +1,7 @@
 import {Component, Inject} from '@angular/core';
 import {DealRoom} from './../../deal-room';
 import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
-import {DealsService} from "../../deals/deals.service";
+import {DealsService} from '../../deals/deals.service';
 
 @Component({
     selector: 'app-end-deal-dialog',
@@ -21,14 +21,14 @@ export class EndDealDialogComponent {
         this.dialogRef.close('close');
     }
 
-    async onYesClick(): void {
+    onYesClick(): void {
         this.dealService.dealEnd(this.data.dealRoom).then((value) => {
-            console.log("OK", value);
+            console.log('OK', value);
             if (value) {
                 this.dialogRef.close('update');
             }
         }, (error) => {
-            console.log("ERROR", error);
+            console.log('ERROR', error);
             this.error = error.message;
         });
     }

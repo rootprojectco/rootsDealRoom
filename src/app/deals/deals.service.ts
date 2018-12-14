@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
-import {Observable} from 'rxjs';
 import {DealRoom} from '../deal-room';
 import {Web3Service} from '../util/web3.service';
-const Web3 = require('web3');
 
 declare let require: any;
 const dealsRoomFactory_artifacts = require('../../../build/contracts/RootsDealRoomFactory.json');
@@ -33,18 +31,18 @@ export class DealsService {
         await this.setDealsRoomFactory();
 
         try {
-            let dealsReturn = [];
+            const dealsReturn = [];
             this.countDeals = await this.DealsRoomFactory.numDeals().valueOf();
 
             for (let i = from; i <= to; i++) {
                 const dealAddress = await this.DealsRoomFactory.dealsAddr(i);
-                if (i >= this.countDeals || dealAddress == '0x') {
+                if (i >= this.countDeals || dealAddress === '0x') {
                     break;
                 }
 
                 if (!this.deals[dealAddress]) {
-                    let dealAddressContract = await this.getDealRoomContractByAddress(dealAddress);
-                    let dealModel = new DealRoom(dealAddress, dealAddressContract);
+                    const dealAddressContract = await this.getDealRoomContractByAddress(dealAddress);
+                    const dealModel = new DealRoom(dealAddress, dealAddressContract);
                     this.updateDealModel(dealAddress, dealModel);
                 }
 
@@ -67,7 +65,7 @@ export class DealsService {
 
         try {
             const numDeals = await this.DealsRoomFactory.numDeals();
-            return parseInt(numDeals.valueOf());
+            return parseInt(numDeals.valueOf(), 10);
         } catch (e) {
             console.log(e);
         }
@@ -105,7 +103,6 @@ export class DealsService {
     }
 
     public async reloadDealRoom(address) {
-        const self = this;
         try {
             const dealAddressContract = await this.getDealRoomContractByAddress(address);
 
@@ -123,23 +120,19 @@ export class DealsService {
     }
 
     public async getPendingReturn(addressDealRoom, address) {
-        const self = this;
-        let pendingReturns = 0;
         const DealRoomContract = await this.getDealRoomContractByAddress(addressDealRoom);
-
-        pendingReturns = this.web3Service.web3.utils.fromWei((await DealRoomContract.pendingReturns(address)).valueOf(), 'ether');
-        return pendingReturns;
+        return this.web3Service.web3.utils.fromWei((await DealRoomContract.pendingReturns(address)).valueOf(), 'ether');
     }
 
-    public createDeal(beneficiary, dateEnd, amount) {
+    public createDeal(beneficiary, dateEnd) {
         return this.DealsRoomFactory.create(beneficiary, (dateEnd.getTime() / 1000), { from: this.web3Service.accounts[0] });
     }
 
     private async getDealRoomByAddress(address) {
         try {
-            let DealRoomContract = await this.getDealRoomContractByAddress(address);
+            const DealRoomContract = await this.getDealRoomContractByAddress(address);
 
-            let dealRoom: DealRoom = new DealRoom(address, DealRoomContract);
+            const dealRoom: DealRoom = new DealRoom(address, DealRoomContract);
 
             dealRoom.balance = this.web3Service.web3.utils.fromWei((await DealRoomContract.balance()).valueOf(), 'ether');
             dealRoom.beneficiary = await DealRoomContract.beneficiary();
@@ -157,14 +150,12 @@ export class DealsService {
     }
 
     private async getDealRoomContractByAddress(address) {
-        let DealRoomAbstractContract: any = await this.getContractPromise(dealsRoom_artifacts);
-        let DealRoomContract = await DealRoomAbstractContract.at(address);
+        const DealRoomAbstractContract: any = await this.getContractPromise(dealsRoom_artifacts);
 
-        return DealRoomContract;
+        return await DealRoomAbstractContract.at(address);
     }
 
     public async dealEnd(dealRoom: DealRoom) {
-        const self = this;
         const DealRoomContract = await this.getDealRoomContractByAddress(dealRoom.address);
 
         try {
@@ -178,7 +169,6 @@ export class DealsService {
     }
 
     public async withdraw(dealRoom: DealRoom) {
-        const self = this;
         const DealRoomContract = await this.getDealRoomContractByAddress(dealRoom.address);
 
         try {
@@ -192,8 +182,8 @@ export class DealsService {
     }
 
     private getContractPromise(artifacts) {
-        let self = this;
-        return new Promise(async (resolve, reject) => {
+        const self = this;
+        return new Promise(async (resolve) => {
             await self.web3Service.artifactsToContract(artifacts)
                 .then((ContractAbstraction) => {
                     resolve(ContractAbstraction);

@@ -16,7 +16,7 @@ export class Web3Service {
   public accountsObservable = new Subject<string[]>();
 
   constructor() {
-    window.addEventListener('load', (event) => {
+    window.addEventListener('load', () => {
       this.bootstrapWeb3();
     });
   }
@@ -33,7 +33,8 @@ export class Web3Service {
 
       try {
         // Hack to provide backwards compatibility for Truffle, which uses web3js 0.20.x
-        Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send;
+        // noinspection JSUnusedGlobalSymbols
+          Web3.providers.HttpProvider.prototype.sendAsync = Web3.providers.HttpProvider.prototype.send;
         // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
         this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
 
@@ -68,7 +69,6 @@ export class Web3Service {
 
   private refreshAccounts() {
     this.web3.eth.getAccounts((err, accs) => {
-      //console.log('Refreshing accounts');
       if (err != null) {
         console.warn('There was an error fetching your accounts.');
         return;
@@ -92,12 +92,12 @@ export class Web3Service {
   }
 
   public isWeb3Connected() {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       if (this.isWeb3Ready) {
         resolve(true);
       } else {
         let tryCount = 0;
-        let interval = setInterval(() => {
+        const interval = setInterval(() => {
             tryCount++;
             if (tryCount > 30) {
               clearInterval(interval);

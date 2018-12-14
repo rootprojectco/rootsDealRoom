@@ -1,9 +1,7 @@
 import {Component, Inject} from '@angular/core';
 import {DealRoom} from './../../deal-room';
 import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
-import {TokenService} from "./../../deals/token.service";
-import {BidDialogComponent} from "./bid-dialog.component";
-import {DealsService} from "../../deals/deals.service";
+import {DealsService} from '../../deals/deals.service';
 
 @Component({
     selector: 'app-withdraw-dialog',
@@ -23,14 +21,14 @@ export class WithdrawDialogComponent {
         this.dialogRef.close();
     }
 
-    async onYesClick(): void {
+    onYesClick(): void {
         this.dealService.withdraw(this.data.dealRoom).then((value) => {
-            console.log("OK", value);
+            console.log('OK', value);
             if (value) {
                 this.dialogRef.close('update');
             }
         }, (error) => {
-            console.log("ERROR", error);
+            console.log('ERROR', error);
             this.error = error.message;
         });
     }
